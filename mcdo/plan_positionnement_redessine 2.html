@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan de positionnement — St-Jovite #22028</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --plateau:#F7F5F0;
+    --cadre:#26221F;
+    --encre:#2A2724;
+    --gris-doux:#E4E0D8;
+    --gris-equip:#D7D2C8;
+    --trait:#C6C0B4;
+    --jaune:#F5B82E;
+    --rouge:#D4452F;
+    --bleu:#3B6FA8;
+    --vert:#3E8E5A;
+    --violet:#8B7BB5;
+    --feutre:#1B4FA0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Barlow Condensed","Segoe UI",system-ui,sans-serif;background:#E8E4DD;padding:14px;color:var(--encre)}
+  .page{max-width:1260px;margin:0 auto}
+  h1{font-size:1.25rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cadre);margin-bottom:10px;font-weight:700}
+  h1 small{display:block;font-size:.72rem;color:#7A746A;letter-spacing:.16em;font-weight:600}
+
+  /* ── barre équipe ── */
+  .equipe{background:#fff;border:1.5px solid var(--trait);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+  .equipe-titre{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;
+    background:var(--cadre);color:#fff;display:inline-block;padding:4px 14px;border-radius:4px;margin-bottom:10px}
+  .equipe-saisie{display:flex;gap:8px;margin-bottom:10px}
+  .equipe-saisie input{flex:1;font-family:"Segoe UI",system-ui,sans-serif;font-size:.9rem;padding:8px 12px;border:1.5px solid var(--gris-doux);border-radius:6px}
+  .equipe-saisie button{font:inherit;font-size:.95rem;font-weight:700;letter-spacing:.04em;padding:8px 18px;border:none;border-radius:6px;
+    background:var(--rouge);color:#fff;cursor:pointer}
+  .equipe-saisie button:hover{filter:brightness(.92)}
+  .jetons{display:flex;flex-wrap:wrap;gap:8px}
+  .jeton{display:inline-flex;align-items:center;gap:6px;background:var(--jaune);border:1.5px solid var(--cadre);
+    border-radius:999px;padding:4px 13px;font-weight:600;font-size:.95rem;cursor:pointer;user-select:none}
+  .jeton:hover{transform:translateY(-1px)}
+  .jeton.choisi{background:var(--cadre);color:var(--jaune);box-shadow:0 0 0 3px var(--jaune)}
+  .jeton.place{background:#E6F1E9;border-color:var(--vert);color:var(--vert)}
+  .jeton .x{font-weight:800;opacity:.5;padding:0 2px}
+  .jeton .x:hover{opacity:1}
+  .aide{font-family:"Segoe UI",system-ui,sans-serif;font-size:.76rem;color:#7A746A;margin-top:8px}
+
+  /* ── cadre du tableau ── */
+  .frame{background:var(--cadre);border-radius:14px;padding:10px;box-shadow:0 10px 34px rgba(0,0,0,.22)}
+  .liseret{height:7px;background:var(--jaune);border-radius:4px}
+  .liseret.haut{margin-bottom:8px}
+  .liseret.bas{margin-top:8px}
+  .board-wrap{container-type:inline-size;position:relative;width:100%;aspect-ratio:1316/924;
+    background:var(--plateau);border-radius:8px;overflow:hidden}
+
+  .el{position:absolute}
+  .lbl-entete{display:flex;align-items:center;font-weight:700;font-size:2.2cqw;letter-spacing:.04em;text-transform:uppercase}
+  .badge{display:flex;align-items:center;justify-content:center;text-align:center;
+    background:var(--rouge);color:#fff;font-weight:700;font-size:1.15cqw;letter-spacing:.12em;
+    border-radius:6px;line-height:1.25}
+  .divider{border-top:3px dashed var(--jaune)}
+  .strip{background:var(--gris-equip);border-radius:3px}
+  .wall{background:var(--cadre);border-radius:3px;opacity:.85}
+  .bar-dark,.bar-rouge,.bar-bleu,.bar-violet{
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    font-weight:600;font-size:1.15cqw;letter-spacing:.12em;border-radius:4px}
+  .bar-dark{background:var(--cadre)}
+  .bar-rouge{background:var(--rouge)}
+  .bar-bleu{background:var(--bleu)}
+  .bar-violet{background:var(--violet)}
+  .row-blanche{background:#fff;border:1px solid var(--gris-doux);border-radius:4px}
+  .lbl-station,.lbl-station-2l{display:flex;align-items:center;justify-content:center;text-align:center;
+    font-weight:700;font-size:1.2cqw;letter-spacing:.1em;color:var(--encre);line-height:1.2}
+  .tag-gris{display:flex;align-items:center;justify-content:center;background:var(--gris-doux);
+    border:1px solid var(--trait);border-radius:4px;font-weight:700;font-size:1.2cqw;letter-spacing:.12em}
+  .tag-bleu{display:flex;align-items:center;justify-content:center;background:var(--bleu);color:#fff;
+    border-radius:3px;font-weight:600;font-size:1cqw;letter-spacing:.14em}
+  .tag-vert{display:flex;align-items:center;justify-content:center;text-align:center;background:var(--vert);color:#fff;
+    border-radius:4px;font-weight:600;font-size:.85cqw;letter-spacing:.08em;line-height:1.3}
+  .tag-rouge{display:flex;align-items:center;justify-content:center;background:var(--rouge);color:#fff;
+    border-radius:4px;font-weight:700;font-size:1.6cqw}
+  .tag-accent{display:flex;align-items:center;justify-content:center;background:var(--rouge);color:#fff;
+    border-radius:4px;font-weight:700;font-size:1.5cqw}
+  .equip,.equip-mini,.equip-strip,.equip-tall{background:var(--gris-equip);border-radius:4px;
+    display:flex;align-items:flex-start;justify-content:center;
+    color:#8C857A;font-weight:600;font-size:.95cqw;letter-spacing:.1em;text-transform:uppercase;padding-top:.3em}
+  .equip-mini,.equip-strip,.equip-tall{padding-top:0}
+  .equip-bas{align-items:flex-end;padding-bottom:.35em;padding-top:0}
+  .col-vert{background:var(--gris-doux);border-radius:4px;display:flex;align-items:center;justify-content:center}
+  .col-vert{writing-mode:vertical-rl;text-orientation:mixed;font-weight:700;font-size:1.2cqw;letter-spacing:.3em;color:#8C857A}
+  .col-fond{background:var(--gris-doux);border-radius:4px}
+  .col-sect{display:flex;align-items:center;justify-content:center;text-align:center;
+    font-weight:700;font-size:.8cqw;letter-spacing:.06em;color:#8C857A;text-transform:uppercase;
+    line-height:1.45;padding:0 .15em}
+  .col-sect + .col-sect{border-top:1.5px solid var(--trait)}
+  .outline{border:2px solid var(--encre);border-radius:4px}
+  .outline-lbl{display:flex;align-items:center;justify-content:center;border:2px solid var(--encre);border-radius:4px;
+    color:var(--rouge);font-weight:700;font-size:1.35cqw;letter-spacing:.14em}
+  .ecran{display:flex;align-items:center;justify-content:center;background:var(--cadre);color:#fff;border-radius:6px;font-weight:600;font-size:1cqw;letter-spacing:.18em;border:2px solid #4A4540}
+  .etoile{display:flex;align-items:center;justify-content:center;font-size:2.8cqw;color:var(--vert)}
+  .equip-3{background:var(--gris-equip);border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 .5em;color:#7D766B;font-weight:600;font-size:.75cqw;letter-spacing:.06em}
+  .card-cibles{background:#fff;border:1.5px solid var(--trait);border-radius:8px}
+  .cell-head{display:flex;align-items:center;justify-content:center;text-align:center;
+    background:var(--plateau);border:1.5px solid var(--encre);border-radius:4px 4px 0 0;
+    font-weight:700;font-size:1cqw;letter-spacing:.08em;line-height:1.2}
+
+  /* ── cases d'écriture ── */
+  .case{position:absolute;background:#fff;border:1.5px solid var(--trait);border-radius:5px;
+    font-family:Caveat,"Segoe Print","Bradley Hand",cursive;
+    font-weight:700;color:var(--feutre);text-align:center;
+    font-size:2cqw;padding:0 .3em;outline:none;transition:box-shadow .12s,border-color .12s;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.05)}
+  .case:hover{border-color:var(--jaune);box-shadow:0 0 0 2px rgba(245,184,46,.45);cursor:text}
+  .case:focus{border-color:var(--jaune);box-shadow:0 0 0 3px var(--jaune);background:#FFFDF4}
+  .case.cible-assignation{border-color:var(--vert);box-shadow:0 0 0 2px rgba(62,142,90,.5);background:#F2F8F4}
+  .case[data-id="date"],.case[data-id="periode"]{font-family:inherit;font-weight:700;font-size:1.7cqw;color:var(--encre);letter-spacing:.04em}
+  .case[data-id="suggestion"]{text-align:left;padding-left:.6em}
+
+  /* ── actions ── */
+  .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  .actions button{font:inherit;font-size:.95rem;font-weight:700;letter-spacing:.04em;padding:10px 20px;border-radius:7px;
+    border:1.5px solid var(--cadre);background:#fff;cursor:pointer}
+  .actions button.principal{background:var(--rouge);border-color:var(--rouge);color:#fff}
+  .actions button:hover{transform:translateY(-1px)}
+  .statut{font-family:"Segoe UI",system-ui,sans-serif;font-size:.8rem;color:#7A746A;align-self:center;margin-left:auto}
+
+  @media print{
+    body{background:#fff;padding:0}
+    .equipe,.actions,h1 small,.aide,.onglets,#vue-plan{display:none!important}
+  #vue-tableau{display:block!important}
+    .page{max-width:none}
+    .frame{box-shadow:none;border-radius:0;padding:6px}
+    .case{box-shadow:none!important}
+  }
+  .onglets{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .onglet{font:inherit;font-size:.95rem;font-weight:700;letter-spacing:.05em;padding:9px 22px;border-radius:8px;
+    border:1.5px solid var(--trait);background:#fff;cursor:pointer;color:var(--encre)}
+  .onglet.actif{background:var(--encre);color:#fff;border-color:var(--encre)}
+  #vue-plan{background:#fff;border:1.5px solid var(--trait);border-radius:12px;padding:16px 16px 6px}
+  .zone{margin-bottom:18px}
+  .zone-titre{font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.85rem;
+    background:var(--encre);color:#fff;padding:6px 14px;border-radius:6px;display:inline-block;margin-bottom:10px}
+  .cartes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+  .carte{border:1.5px solid var(--gris-doux);border-radius:8px;padding:10px;background:#fffdf9}
+  .carte-titre{font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;color:#5d564c}
+  .carte input{width:100%;box-sizing:border-box;font-family:"Segoe UI",system-ui,sans-serif;font-size:.9rem;
+    padding:6px 8px;border:1.5px solid var(--gris-doux);border-radius:6px;margin-bottom:6px;background:#fff}
+  .carte .miroir{font-weight:700}
+  .carte .lib{display:block;font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:#8C857A;margin:2px 0}
+</style>
+</head>
+<body>
+<div class="page">
+  <h1>Plan de positionnement du quart
+    <small>McDonald's St-Jovite · Restaurant #22028 · version numérique du tableau</small>
+  </h1>
+
+  <div class="equipe">
+    <span class="equipe-titre">Équipe du quart</span>
+    <div class="equipe-saisie">
+      <input type="text" id="nouveau-nom" placeholder="Ajouter un prénom (ex. Romalie)" maxlength="30">
+      <button id="btn-ajouter">Ajouter</button>
+    </div>
+    <div class="jetons" id="jetons"></div>
+    <p class="aide">Touche un prénom puis touche une case du tableau pour l'assigner. Un prénom vert est déjà placé. Tu peux aussi écrire directement dans n'importe quelle case.</p>
+  </div>
+
+  <div class="onglets">
+    <button class="onglet actif" data-vue="vue-tableau">Tableau de positionnement</button>
+    <button class="onglet" data-vue="vue-plan">Plan détaillé — tâches et objectifs</button>
+  </div>
+
+  <div id="vue-tableau">
+  <div class="frame">
+    <div class="liseret haut"></div>
+    <div class="board-wrap" id="board">
+<div class="el lbl-entete" style="left:4.41%;top:1.52%;width:6.23%;height:3.90%;">Date&nbsp;:</div>
+<div class="el lbl-entete" style="left:32.37%;top:1.73%;width:8.51%;height:3.68%;">P&eacute;riode&nbsp;:</div>
+<div class="el badge" style="left:84.95%;top:1.08%;width:11.55%;height:4.33%;">ST-JOVITE<br>#22028</div>
+<div class="el divider" style="left:3.04%;top:6.06%;width:93.47%;height:0.00%;"></div>
+<div class="el strip" style="left:20.14%;top:6.71%;width:65.73%;height:1.19%;"></div>
+<div class="el bar-dark" style="left:5.62%;top:7.47%;width:8.28%;height:3.25%;">LIGNE 2</div>
+<div class="el bar-dark" style="left:14.44%;top:7.47%;width:8.28%;height:3.25%;">LIGNE 1</div>
+<div class="el equip-mini" style="left:8.43%;top:11.26%;width:2.58%;height:2.81%;"></div>
+<div class="el equip-mini" style="left:17.25%;top:11.26%;width:2.58%;height:2.81%;"></div>
+<div class="el lbl-station" style="left:23.18%;top:12.77%;width:8.28%;height:1.95%;">FENÊTRE 2</div>
+<div class="el" style="left:32.30%;top:7.60%;width:3.20%;height:4.40%;"><svg viewBox="0 0 60 54" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><polygon points="30,2 58,52 2,52" fill="#D4452F"/><text x="30" y="46" text-anchor="middle" fill="#fff" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="14" letter-spacing="0.5">10 S</text></svg></div>
+<div class="el" style="left:32.30%;top:12.60%;width:3.20%;height:4.40%;"><svg viewBox="0 0 60 54" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><polygon points="30,2 58,52 2,52" fill="#D4452F"/><text x="30" y="46" text-anchor="middle" fill="#fff" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="14" letter-spacing="0.5">V.C.C</text></svg></div>
+<div class="el tag-gris" style="left:36.40%;top:10.17%;width:8.81%;height:2.60%;">FRITE</div>
+<div class="el tag-gris" style="left:45.59%;top:10.17%;width:8.81%;height:2.60%;">BERTHA</div>
+<div class="el tag-gris" style="left:55.20%;top:10.17%;width:5.20%;height:2.60%;">TIMER</div>
+<div class="el tag-gris" style="left:60.90%;top:10.17%;width:5.20%;height:2.60%;">FOURS</div>
+<div class="el tag-gris" style="left:66.26%;top:10.17%;width:10.18%;height:2.60%;">PRÉPARATION</div>
+<div class="el lbl-station" style="left:85.26%;top:12.77%;width:8.28%;height:1.95%;">FENÊTRE 1</div>
+<div class="el bar-dark" style="left:85.26%;top:6.11%;width:8.28%;height:2.16%;">OUVERTURE 7H</div>
+<div class="el lbl-station-2l" style="left:10.64%;top:29.00%;width:11.09%;height:4.11%;">BOISSONS ET<br>DESSERTS</div>
+<div class="el equip-3" style="left:8.51%;top:36.36%;width:15.35%;height:2.81%;"><span>SMOOTHIES</span><span>Mc CAFÉ</span><span>LAIT FRAPPÉ</span></div>
+<div class="el wall" style="left:4.71%;top:39.61%;width:27.05%;height:1.19%;"></div>
+<div class="el tag-rouge" style="left:5.17%;top:41.77%;width:2.43%;height:5.41%;">1</div>
+<div class="el lbl-station" style="left:8.36%;top:43.29%;width:12.92%;height:1.73%;">PRÉPOSÉ AUX ATTENTES</div>
+<div class="el tag-bleu" style="left:36.78%;top:29.22%;width:8.81%;height:1.95%;">BACKUP AVANT</div>
+<div class="el tag-bleu" style="left:46.97%;top:21.32%;width:8.81%;height:2.92%;">BACKUP DRIVE</div>
+<div class="el" style="left:42.20%;top:24.60%;width:3.20%;height:4.40%;"><svg viewBox="0 0 60 54" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><polygon points="30,2 58,52 2,52" fill="#D4452F"/><text x="30" y="46" text-anchor="middle" fill="#fff" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="14" letter-spacing="0.5">V.C.C</text></svg></div>
+<div class="el equip" style="left:45.59%;top:28.14%;width:11.55%;height:8.23%;"></div>
+<div class="el lbl-station" style="left:63.64%;top:30.30%;width:3.95%;height:1.95%;">UHC</div>
+<div class="el outline" style="left:57.60%;top:28.57%;width:31.00%;height:7.25%;"></div>
+<div class="el equip-strip" style="left:59.88%;top:32.47%;width:27.81%;height:2.92%;"></div>
+<div class="el tag-accent" style="left:34.35%;top:48.27%;width:2.58%;height:2.81%;">M</div>
+<div class="el col-fond" style="left:45.44%;top:48.27%;width:4.71%;height:31.60%;"></div>
+<div class="el col-sect" style="left:45.44%;top:48.27%;width:4.71%;height:10.53%;">CAFÉ</div>
+<div class="el col-sect" style="left:45.44%;top:58.80%;width:4.71%;height:10.53%;">SPLASH<br>FRAÎCHEUR<br>CAFÉ GLACÉ</div>
+<div class="el col-sect" style="left:45.44%;top:69.34%;width:4.71%;height:10.53%;">JUS DE<br>POMME<br>JUS<br>D'ORANGE</div>
+<div class="el col-vert" style="left:27.05%;top:59.28%;width:4.56%;height:18.64%;">CAISSE</div>
+<div class="el col-fond col-sect" style="left:27.05%;top:50.65%;width:4.56%;height:8.00%;">VITRINE</div>
+<div class="el col-fond col-sect" style="left:27.05%;top:41.99%;width:4.56%;height:8.00%;">COMPTOIR<br>COMMANDE<br>MOBILE</div>
+<div class="el tag-gris" style="left:90.00%;top:22.10%;width:5.50%;height:2.60%;">WASH</div>
+<div class="el" style="left:90.75%;top:15.40%;width:4.00%;height:6.20%;"><svg viewBox="0 0 40 64" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><line x1="20" y1="2" x2="20" y2="46" stroke="#26221F" stroke-width="4"/><polygon points="11,44 29,44 20,62" fill="#26221F"/></svg></div>
+<div class="el ecran" style="left:90.27%;top:29.90%;width:4.56%;height:4.55%;">ÉCRANS</div>
+<div class="el etoile" style="left:89.50%;top:35.61%;width:3.34%;height:4.76%;">☆</div>
+<div class="el tag-vert" style="left:55.93%;top:45.45%;width:4.56%;height:4.33%;">CUISEUR<br>À ŒUF</div>
+<div class="el lbl-station" style="left:62.16%;top:45.02%;width:5.62%;height:1.62%;">GRILL 1</div>
+<div class="el lbl-station" style="left:73.10%;top:45.02%;width:5.62%;height:1.62%;">GRILL 2</div>
+<div class="el lbl-station" style="left:84.35%;top:44.81%;width:9.27%;height:1.62%;">PRODUITS FRITS</div>
+<div class="el zone-cuisine" style="left:51.52%;top:50.00%;width:41.95%;height:8.66%;"></div>
+<div class="el equip" style="left:61.25%;top:50.65%;width:7.60%;height:7.14%;">Grill</div>
+<div class="el equip" style="left:72.19%;top:50.65%;width:7.60%;height:7.14%;">Grill</div>
+<div class="el equip" style="left:84.95%;top:50.65%;width:8.51%;height:7.14%;">Friteuses</div>
+<div class="el outline-lbl" style="left:6.53%;top:57.58%;width:17.17%;height:3.03%;">LEADER DE QUART</div>
+<div class="el outline-lbl" style="left:6.53%;top:71.00%;width:17.17%;height:3.03%;">L.E.C</div>
+<div class="el card-cibles" style="left:50.61%;top:58.44%;width:45.90%;height:21.65%;"></div>
+<div class="el bar-dark" style="left:51.37%;top:59.31%;width:44.38%;height:2.71%;">CIBLES</div>
+<div class="el bar-dark" style="left:51.37%;top:62.77%;width:44.38%;height:2.71%;">VENTES À SUGGESTION&nbsp;:</div>
+<div class="el cell-head" style="left:51.37%;top:72.19%;width:6.91%;height:3.79%;">FCFP</div>
+<div class="el cell-head" style="left:58.21%;top:72.19%;width:6.91%;height:3.79%;">RàP</div>
+<div class="el cell-head" style="left:65.05%;top:72.19%;width:6.91%;height:3.79%;">COA</div>
+<div class="el cell-head" style="left:71.88%;top:72.19%;width:8.43%;height:3.79%;">SERVICE<br>AUX TABLES</div>
+<div class="el bar-dark" style="left:3.04%;top:80.95%;width:28.88%;height:2.27%;">PRÉPOSÉ À LA SALLE À MANGER</div>
+<div class="el bar-rouge" style="left:32.29%;top:80.95%;width:34.95%;height:2.27%;">GÉRANT DE PRODUCTION</div>
+<div class="el bar-bleu" style="left:67.63%;top:80.95%;width:28.88%;height:2.27%;">GÉRANT DE SERVICE</div>
+<div class="el row-blanche" style="left:3.04%;top:83.33%;width:28.88%;height:5.41%;"></div>
+<div class="el row-blanche" style="left:32.29%;top:83.33%;width:34.95%;height:5.41%;"></div>
+<div class="el row-blanche" style="left:67.63%;top:83.33%;width:28.88%;height:5.41%;"></div>
+<div class="el bar-dark" style="left:3.04%;top:89.18%;width:19.76%;height:2.27%;">SPÉCIALISTE EN EXPÉRIENCE CLIENT</div>
+<div class="el bar-dark" style="left:22.95%;top:89.18%;width:8.97%;height:2.27%;">CIBLES</div>
+<div class="el bar-rouge" style="left:32.29%;top:89.18%;width:34.95%;height:2.27%;">AMBASSADEUR McLIVRAISON</div>
+<div class="el bar-violet" style="left:67.63%;top:89.18%;width:28.88%;height:2.27%;">FÊTES ENFANTS / AUTRE</div>
+<div class="el row-blanche" style="left:3.04%;top:91.56%;width:28.88%;height:4.76%;"></div>
+<div class="el row-blanche" style="left:32.29%;top:91.56%;width:34.95%;height:4.76%;"></div>
+<div class="el row-blanche" style="left:67.63%;top:91.56%;width:28.88%;height:4.76%;"></div>
+<input type="text" class="case" data-id="date" style="left:10.94%;top:1.30%;width:10.79%;height:4.22%;" title="Date" aria-label="Date" autocomplete="off">
+<input type="text" class="case" data-id="periode" style="left:41.41%;top:1.62%;width:19.38%;height:3.46%;" title="Période" aria-label="Période" autocomplete="off">
+<input type="text" class="case" data-id="frite-1" style="left:37.16%;top:13.10%;width:8.13%;height:2.92%;" title="Frite" aria-label="Frite" autocomplete="off">
+<input type="text" class="case" data-id="frite-2" style="left:46.50%;top:13.20%;width:7.98%;height:3.14%;" title="Frite" aria-label="Frite" autocomplete="off">
+<input type="text" class="case" data-id="prep-1" style="left:66.26%;top:13.10%;width:10.18%;height:2.81%;" title="Préparation" aria-label="Préparation" autocomplete="off">
+<input type="text" class="case" data-id="vert1-1" style="left:61.55%;top:24.46%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="vert1-2" style="left:71.81%;top:24.46%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="vert1-3" style="left:81.31%;top:24.46%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="table-prep" style="left:60.03%;top:32.58%;width:27.05%;height:2.71%;" title="Table de préparation" aria-label="Table de préparation" autocomplete="off">
+<input type="text" class="case" data-id="boissons" style="left:11.78%;top:33.33%;width:8.81%;height:3.03%;" title="Boissons et desserts" aria-label="Boissons et desserts" autocomplete="off">
+<input type="text" class="case" data-id="vert2-1" style="left:61.55%;top:36.58%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="vert2-2" style="left:71.81%;top:36.58%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="vert2-3" style="left:81.31%;top:36.58%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="comptoir-mcd" style="left:37.69%;top:48.38%;width:6.91%;height:2.71%;" title="Commandes mobiles" aria-label="Commandes mobiles" autocomplete="off">
+<input type="text" class="case" data-id="grill1" style="left:60.79%;top:46.97%;width:8.05%;height:2.81%;" title="Grill 1" aria-label="Grill 1" autocomplete="off">
+<input type="text" class="case" data-id="grill2" style="left:71.81%;top:46.97%;width:8.05%;height:2.92%;" title="Grill 2" aria-label="Grill 2" autocomplete="off">
+<input type="text" class="case" data-id="pfrits" style="left:84.88%;top:46.75%;width:8.36%;height:3.03%;" title="Produits frits" aria-label="Produits frits" autocomplete="off">
+<input type="text" class="case" data-id="leader-1" style="left:9.88%;top:61.26%;width:10.26%;height:3.57%;" title="Leader de quart" aria-label="Leader de quart" autocomplete="off">
+<input type="text" class="case" data-id="lec" style="left:9.88%;top:74.68%;width:10.26%;height:3.57%;" title="L.E.C" aria-label="L.E.C" autocomplete="off">
+<input type="text" class="case" data-id="bleu-1" style="left:31.91%;top:65.26%;width:7.90%;height:2.60%;" title="Poste" aria-label="Poste" autocomplete="off">
+<input type="text" class="case" data-id="bleu-2" style="left:31.91%;top:69.81%;width:7.98%;height:2.60%;" title="Poste" aria-label="Poste" autocomplete="off">
+<input type="text" class="case" data-id="caisse-mclivraison" style="left:40.31%;top:67.54%;width:4.71%;height:2.60%;" title="Poste" aria-label="Poste" autocomplete="off">
+<input type="text" class="case" data-id="suggestion" style="left:51.67%;top:68.07%;width:44.68%;height:3.25%;" title="Ventes à suggestion" aria-label="Ventes à suggestion" autocomplete="off">
+<input type="text" class="case" data-id="fcfp" style="left:51.37%;top:75.87%;width:6.91%;height:3.79%;" title="FCFP" aria-label="FCFP" autocomplete="off">
+<input type="text" class="case" data-id="rap" style="left:58.21%;top:75.97%;width:6.91%;height:3.68%;" title="RàP" aria-label="RàP" autocomplete="off">
+<input type="text" class="case" data-id="coa" style="left:65.05%;top:75.97%;width:6.84%;height:3.68%;" title="COA" aria-label="COA" autocomplete="off">
+<input type="text" class="case" data-id="sat" style="left:71.88%;top:75.97%;width:8.36%;height:3.68%;" title="Service aux tables" aria-label="Service aux tables" autocomplete="off">
+<input type="text" class="case" data-id="salle" style="left:3.80%;top:84.41%;width:27.36%;height:3.25%;" title="Préposé à la salle à manger" aria-label="Préposé à la salle à manger" autocomplete="off">
+<input type="text" class="case" data-id="gservice" style="left:68.39%;top:84.41%;width:27.36%;height:3.25%;" title="Gérant de service" aria-label="Gérant de service" autocomplete="off">
+<input type="text" class="case" data-id="experience" style="left:3.80%;top:92.32%;width:18.24%;height:3.25%;" title="Spécialiste expérience client" aria-label="Spécialiste expérience client" autocomplete="off">
+<input type="text" class="case" data-id="cibles-bas" style="left:23.71%;top:92.32%;width:7.45%;height:3.25%;" title="Cibles" aria-label="Cibles" autocomplete="off">
+<input type="text" class="case" data-id="ambassadeur" style="left:33.05%;top:92.32%;width:33.43%;height:3.25%;" title="Ambassadeur McLivraison" aria-label="Ambassadeur McLivraison" autocomplete="off">
+<input type="text" class="case" data-id="fetes" style="left:68.39%;top:92.32%;width:27.36%;height:3.25%;" title="Fêtes enfants / autre" aria-label="Fêtes enfants / autre" autocomplete="off">
+<input type="text" class="case" data-id="fenetre2" style="left:23.18%;top:8.66%;width:8.28%;height:3.35%;" title="Fenêtre 2" aria-label="Fenêtre 2" autocomplete="off">
+<input type="text" class="case" data-id="fenetre1" style="left:85.26%;top:8.44%;width:8.28%;height:3.35%;" title="Fenêtre 1" aria-label="Fenêtre 1" autocomplete="off">
+<input type="text" class="case" data-id="ligne2" style="left:5.62%;top:14.83%;width:8.28%;height:3.57%;" title="Ligne 2" aria-label="Ligne 2" autocomplete="off">
+<input type="text" class="case" data-id="ligne1" style="left:14.44%;top:14.83%;width:8.28%;height:3.57%;" title="Ligne 1" aria-label="Ligne 1" autocomplete="off">
+<input type="text" class="case" data-id="backup-avant-1" style="left:37.23%;top:31.17%;width:7.90%;height:2.60%;" title="Backup avant" aria-label="Backup avant" autocomplete="off">
+<input type="text" class="case" data-id="backup-avant-2" style="left:37.16%;top:34.52%;width:8.05%;height:3.03%;" title="Backup avant" aria-label="Backup avant" autocomplete="off">
+<input type="text" class="case" data-id="backup-avant-3" style="left:37.16%;top:37.99%;width:8.05%;height:3.03%;" title="Backup avant" aria-label="Backup avant" autocomplete="off">
+<input type="text" class="case" data-id="backup-drive" style="left:46.05%;top:24.24%;width:10.64%;height:2.92%;" title="Backup drive" aria-label="Backup drive" autocomplete="off">
+<input type="text" class="case" data-id="attentes-1" style="left:8.21%;top:45.24%;width:15.35%;height:2.81%;" title="Préposé aux attentes" aria-label="Préposé aux attentes" autocomplete="off">
+<input type="text" class="case" data-id="attentes-2" style="left:8.21%;top:48.92%;width:15.35%;height:2.81%;" title="Préposé aux attentes" aria-label="Préposé aux attentes" autocomplete="off">
+<input type="text" class="case" data-id="gprod" style="left:33.05%;top:84.41%;width:33.43%;height:3.25%;" title="Gérant de production" aria-label="Gérant de production" autocomplete="off">
+    </div>
+    <div class="liseret bas"></div>
+  </div>
+  </div>
+
+  <div id="vue-plan" style="display:none">
+    <p class="aide" style="margin-top:0">Même logique que le tableau : touche un prénom de la liste puis une case Prénom. Les prénoms sont synchronisés avec le tableau dans les deux sens. Les tâches se choisissent dans la liste ou s'écrivent librement.</p>
+    <div class="zone">
+      <span class="zone-titre">Service</span>
+      <div class="cartes">
+      <div class="carte" data-ref="fenetre2">
+        <div class="carte-titre">Fenêtre 2</div>
+        <input type="text" class="miroir" data-ref="fenetre2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:fenetre2" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:fenetre2" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:fenetre2" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="ligne2">
+        <div class="carte-titre">Ligne 2</div>
+        <input type="text" class="miroir" data-ref="ligne2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:ligne2" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:ligne2" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:ligne2" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="ligne1">
+        <div class="carte-titre">Ligne 1</div>
+        <input type="text" class="miroir" data-ref="ligne1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:ligne1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:ligne1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:ligne1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="fenetre1">
+        <div class="carte-titre">Fenêtre 1 — Ouverture 7h</div>
+        <input type="text" class="miroir" data-ref="fenetre1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:fenetre1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:fenetre1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:fenetre1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="backup-avant-1">
+        <div class="carte-titre">Backup avant 1</div>
+        <input type="text" class="miroir" data-ref="backup-avant-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:backup-avant-1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:backup-avant-1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:backup-avant-1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="backup-avant-2">
+        <div class="carte-titre">Backup avant 2</div>
+        <input type="text" class="miroir" data-ref="backup-avant-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:backup-avant-2" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:backup-avant-2" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:backup-avant-2" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="backup-avant-3">
+        <div class="carte-titre">Backup avant 3</div>
+        <input type="text" class="miroir" data-ref="backup-avant-3" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:backup-avant-3" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:backup-avant-3" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:backup-avant-3" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="backup-drive">
+        <div class="carte-titre">Backup drive</div>
+        <input type="text" class="miroir" data-ref="backup-drive" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:backup-drive" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:backup-drive" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:backup-drive" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="comptoir-mcd">
+        <div class="carte-titre">Commandes mobiles</div>
+        <input type="text" class="miroir" data-ref="comptoir-mcd" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:comptoir-mcd" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:comptoir-mcd" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:comptoir-mcd" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="bleu-1">
+        <div class="carte-titre">Caisse 1</div>
+        <input type="text" class="miroir" data-ref="bleu-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:bleu-1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:bleu-1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:bleu-1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="bleu-2">
+        <div class="carte-titre">Caisse 2</div>
+        <input type="text" class="miroir" data-ref="bleu-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:bleu-2" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:bleu-2" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:bleu-2" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="caisse-mclivraison">
+        <div class="carte-titre">Caisse — appui</div>
+        <input type="text" class="miroir" data-ref="caisse-mclivraison" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:caisse-mclivraison" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:caisse-mclivraison" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:caisse-mclivraison" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="boissons">
+        <div class="carte-titre">Boissons et desserts</div>
+        <input type="text" class="miroir" data-ref="boissons" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:boissons" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:boissons" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:boissons" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="attentes-1">
+        <div class="carte-titre">Préposé aux attentes 1</div>
+        <input type="text" class="miroir" data-ref="attentes-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:attentes-1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:attentes-1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:attentes-1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="attentes-2">
+        <div class="carte-titre">Préposé aux attentes 2</div>
+        <input type="text" class="miroir" data-ref="attentes-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:attentes-2" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:attentes-2" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:attentes-2" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="salle">
+        <div class="carte-titre">Préposé à la salle à manger</div>
+        <input type="text" class="miroir" data-ref="salle" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:salle" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:salle" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:salle" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="leader-1">
+        <div class="carte-titre">Leader de quart</div>
+        <input type="text" class="miroir" data-ref="leader-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:leader-1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:leader-1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:leader-1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="lec">
+        <div class="carte-titre">L.E.C</div>
+        <input type="text" class="miroir" data-ref="lec" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:lec" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:lec" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:lec" list="liste-obj" autocomplete="off">
+      </div>
+      </div>
+    </div>
+    <div class="zone">
+      <span class="zone-titre">Cuisine</span>
+      <div class="cartes">
+      <div class="carte" data-ref="frite-1">
+        <div class="carte-titre">Frite</div>
+        <input type="text" class="miroir" data-ref="frite-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:frite-1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:frite-1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:frite-1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="frite-2">
+        <div class="carte-titre">Bertha</div>
+        <input type="text" class="miroir" data-ref="frite-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:frite-2" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:frite-2" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:frite-2" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="prep-1">
+        <div class="carte-titre">Préparation</div>
+        <input type="text" class="miroir" data-ref="prep-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:prep-1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:prep-1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:prep-1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="vert1-1">
+        <div class="carte-titre">Production — haut 1</div>
+        <input type="text" class="miroir" data-ref="vert1-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:vert1-1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:vert1-1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:vert1-1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="vert1-2">
+        <div class="carte-titre">Production — haut 2</div>
+        <input type="text" class="miroir" data-ref="vert1-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:vert1-2" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:vert1-2" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:vert1-2" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="vert1-3">
+        <div class="carte-titre">Production — haut 3</div>
+        <input type="text" class="miroir" data-ref="vert1-3" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:vert1-3" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:vert1-3" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:vert1-3" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="table-prep">
+        <div class="carte-titre">UHC — table de préparation</div>
+        <input type="text" class="miroir" data-ref="table-prep" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:table-prep" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:table-prep" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:table-prep" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="vert2-1">
+        <div class="carte-titre">Production — bas 1</div>
+        <input type="text" class="miroir" data-ref="vert2-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:vert2-1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:vert2-1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:vert2-1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="vert2-2">
+        <div class="carte-titre">Production — bas 2</div>
+        <input type="text" class="miroir" data-ref="vert2-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:vert2-2" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:vert2-2" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:vert2-2" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="vert2-3">
+        <div class="carte-titre">Production — bas 3</div>
+        <input type="text" class="miroir" data-ref="vert2-3" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:vert2-3" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:vert2-3" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:vert2-3" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="grill1">
+        <div class="carte-titre">Grill 1</div>
+        <input type="text" class="miroir" data-ref="grill1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:grill1" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:grill1" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:grill1" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="grill2">
+        <div class="carte-titre">Grill 2</div>
+        <input type="text" class="miroir" data-ref="grill2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:grill2" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:grill2" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:grill2" list="liste-obj" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="pfrits">
+        <div class="carte-titre">Produits frits</div>
+        <input type="text" class="miroir" data-ref="pfrits" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <input type="text" class="extra" data-id="t1:pfrits" list="liste-t1" autocomplete="off">
+        <span class="lib">Tâche secondaire</span>
+        <input type="text" class="extra" data-id="t2:pfrits" list="liste-t2" autocomplete="off">
+        <span class="lib">Objectif</span>
+        <input type="text" class="extra" data-id="obj:pfrits" list="liste-obj" autocomplete="off">
+      </div>
+      </div>
+    </div>
+    <div class="zone">
+      <span class="zone-titre">Encadrement</span>
+      <div class="cartes">
+      <div class="carte" data-ref="gprod">
+        <div class="carte-titre">Gérant de production</div>
+        <input type="text" class="miroir" data-ref="gprod" placeholder="Prénom" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="gservice">
+        <div class="carte-titre">Gérant de service</div>
+        <input type="text" class="miroir" data-ref="gservice" placeholder="Prénom" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="experience">
+        <div class="carte-titre">Spécialiste expérience client</div>
+        <input type="text" class="miroir" data-ref="experience" placeholder="Prénom" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="ambassadeur">
+        <div class="carte-titre">Ambassadeur McLivraison</div>
+        <input type="text" class="miroir" data-ref="ambassadeur" placeholder="Prénom" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="fetes">
+        <div class="carte-titre">Fêtes enfants / autre</div>
+        <input type="text" class="miroir" data-ref="fetes" placeholder="Prénom" autocomplete="off">
+      </div>
+      </div>
+    </div>
+    <div class="zone">
+      <span class="zone-titre">Cibles du quart</span>
+      <div class="cartes">
+      <div class="carte" data-ref="suggestion">
+        <div class="carte-titre">Ventes à suggestion</div>
+        <input type="text" class="miroir" data-ref="suggestion" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="fcfp">
+        <div class="carte-titre">FCFP</div>
+        <input type="text" class="miroir" data-ref="fcfp" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="rap">
+        <div class="carte-titre">RàP</div>
+        <input type="text" class="miroir" data-ref="rap" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="coa">
+        <div class="carte-titre">COA</div>
+        <input type="text" class="miroir" data-ref="coa" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="sat">
+        <div class="carte-titre">Service aux tables</div>
+        <input type="text" class="miroir" data-ref="sat" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="cibles-bas">
+        <div class="carte-titre">Cibles — bandeau</div>
+        <input type="text" class="miroir" data-ref="cibles-bas" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      </div>
+    </div>
+    <datalist id="liste-obj"><option value="Quintile 1"><option value="Quintile 2"><option value="Quintile 3"></datalist>
+    <datalist id="liste-t1"><option value="Poubelles salle et extérieur"><option value="Lobby — tables, chaises, balayage"><option value="Plateaux et bacs"><option value="Salles de bain — vérification"><option value="Réapprovisionnement sauces / serviettes"><option value="Vitres et portes d'entrée"><option value="Montage du stock de ligne"><option value="Vaisselle — 3 éviers"><option value="Terrasse et stationnement"><option value="Propreté McCafé"><option value="Remplissage"><option value="Seau à linge"><option value="Assainissement"></datalist>
+    <datalist id="liste-t2"><option value="Nettoyage Bertha"><option value="Filtrage des friteuses"><option value="Nettoyage distributeur de jus"><option value="Murs et plinthes"><option value="Chambre froide — rotation et dates"><option value="Écrans et bornes de commande"><option value="Inventaire de fin de quart"><option value="Zone McLivraison — ordre et propreté"><option value="Poussière présentoirs et décorations"><option value="Aire de jeux"></datalist>
+  </div>
+
+  <div class="actions">
+    <button class="principal" id="btn-sauver">Sauvegarder ce plan</button>
+    <button id="btn-charger">Recharger</button>
+    <button id="btn-vider">Effacer le tableau</button>
+    <button id="btn-imprimer">Imprimer</button>
+    <button id="btn-courriel">Envoyer par courriel</button>
+    <span class="statut" id="statut"></span>
+  </div>
+</div>
+
+<script>
+const ROSTER_DEFAUT = ["Abdel Mounime","Abderrahman","Abderrazzak","Achraf","Aissa","Alessandro","Aube","Ayoub","Bader","Benjamin","Benoit","Charles","Charles-\u00c9mile","Christian","Damien","Denis","Emil","Emmy","\u00c9ric","Fatima","Hamza B.","Hamza N.","Irhisnat","Issa","Jimmy","Koffi","Lo\u00efc","Louka","Malick","Marie-Jos\u00e9e","Marie-Pier","Maxime","Michael","Mustapha","Naomie","Noah","Patrick","Rania","Raymond","Romalie","Romuald","Samuel","Simon","Th\u00e9o L.","Th\u00e9o R.","Thomas","Val\u00e9rie","William","Winie","Xavier","Yassmine","Zachary","Zahira","Zakaria"];
+let roster = [];
+let nomChoisi = null;
+let memoire = {};
+
+async function stGet(k){
+  try{ const r = await window.storage.get(k); return r ? r.value : null; }
+  catch(e){ try{ return localStorage.getItem(k); }catch(_){ return memoire[k] ?? null; } }
+}
+async function stSet(k,v){
+  try{ await window.storage.set(k,v); }
+  catch(e){ try{ localStorage.setItem(k,v); }catch(_){ memoire[k]=v; } }
+}
+
+const cases = [...document.querySelectorAll(".case")];
+
+cases.forEach(c=>{
+  c.addEventListener("input", ()=>{ majJetons(); });
+  c.addEventListener("pointerdown", (e)=>{
+    if(nomChoisi && !c.value.trim()){
+      e.preventDefault();
+      c.value = nomChoisi;
+      nomChoisi = null;
+      majJetons();
+    }
+  });
+});
+
+function nomsPlaces(){
+  return new Set(cases.map(c=>c.value.trim().toLowerCase()).filter(Boolean));
+}
+
+function majJetons(){
+  const cont = document.getElementById("jetons");
+  cont.innerHTML = "";
+  const places = nomsPlaces();
+  for(const nom of roster){
+    const j = document.createElement("span");
+    j.className = "jeton";
+    if(places.has(nom.toLowerCase())) j.classList.add("place");
+    if(nomChoisi===nom) j.classList.add("choisi");
+    j.textContent = nom + " ";
+    const x = document.createElement("span");
+    x.className = "x"; x.textContent = "✕"; x.title = "Retirer de la liste";
+    x.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      roster = roster.filter(n=>n!==nom);
+      if(nomChoisi===nom) nomChoisi=null;
+      sauverRoster(); majJetons();
+    });
+    j.appendChild(x);
+    j.addEventListener("click", ()=>{ nomChoisi = (nomChoisi===nom)?null:nom; majJetons(); });
+    cont.appendChild(j);
+  }
+  if(roster.length===0){
+    cont.innerHTML = '<span class="aide">Aucun prénom enregistré. Ajoute ton équipe — la liste est conservée d\'un quart à l\'autre.</span>';
+  }
+  cases.forEach(c=>c.classList.toggle("cible-assignation", !!nomChoisi && !c.value.trim()));
+}
+async function sauverRoster(){ await stSet("stjovite-plan-roster", JSON.stringify(roster)); }
+
+document.getElementById("btn-ajouter").addEventListener("click", ajouterNom);
+document.getElementById("nouveau-nom").addEventListener("keydown", e=>{ if(e.key==="Enter") ajouterNom(); });
+function ajouterNom(){
+  const inp = document.getElementById("nouveau-nom");
+  const nom = inp.value.trim();
+  if(!nom) return;
+  if(!roster.some(n=>n.toLowerCase()===nom.toLowerCase())){
+    roster.push(nom); roster.sort((a,b)=>a.localeCompare(b,"fr"));
+    sauverRoster();
+  }
+  inp.value=""; majJetons(); inp.focus();
+}
+
+function valeurCase(id){
+  const c = cases.find(x=>x.dataset.id===id);
+  return c ? c.value.trim() : "";
+}
+function clePlan(){
+  const d = valeurCase("date") || "sans-date";
+  const p = valeurCase("periode") || "sans-periode";
+  return "stjovite-tableau:" + d.toLowerCase() + ":" + p.toLowerCase();
+}
+function etat(){
+  const o = {};
+  cases.forEach(c=>{ if(c.value.trim()) o[c.dataset.id]=c.value.trim(); });
+  extras.forEach(x=>{ if(x.value.trim()) o[x.dataset.id]=x.value.trim(); });
+  return o;
+}
+function appliquer(o){
+  cases.forEach(c=>{
+    if(c.dataset.id==="date"||c.dataset.id==="periode") return;
+    c.value = (o && o[c.dataset.id]) || "";
+  });
+  extras.forEach(x=>{ x.value = (o && o[x.dataset.id]) || ""; });
+  majJetons();
+}
+function statut(msg){
+  const s = document.getElementById("statut");
+  s.textContent = msg;
+  clearTimeout(statut.t);
+  statut.t = setTimeout(()=>{ s.textContent=""; }, 4500);
+}
+
+document.getElementById("btn-sauver").addEventListener("click", async ()=>{
+  if(!valeurCase("date")){ statut("Écris d'abord la date dans la case Date du tableau."); return; }
+  await stSet(clePlan(), JSON.stringify(etat()));
+  await stSet("stjovite-tableau:dernier", clePlan());
+  statut("Plan sauvegardé pour " + valeurCase("date") + (valeurCase("periode") ? " — " + valeurCase("periode") : "") + ".");
+});
+document.getElementById("btn-charger").addEventListener("click", async ()=>{
+  const brut = await stGet(clePlan());
+  if(brut){ try{ appliquer(JSON.parse(brut)); statut("Plan rechargé."); }catch(e){ statut("Plan illisible."); } }
+  else statut("Aucun plan enregistré pour cette date et cette période.");
+});
+document.getElementById("btn-vider").addEventListener("click", ()=>{
+  appliquer(null);
+  statut("Tableau effacé. Sauvegarde si tu veux conserver une version.");
+});
+document.getElementById("btn-imprimer").addEventListener("click", ()=>window.print());
+
+const miroirs = [...document.querySelectorAll(".miroir")];
+const extras  = [...document.querySelectorAll(".extra")];
+
+function syncMiroirs(){
+  miroirs.forEach(m=>{
+    const c = cases.find(x=>x.dataset.id===m.dataset.ref);
+    if(c && m.value!==c.value) m.value = c.value;
+  });
+}
+const _majJetons = majJetons;
+majJetons = function(){ _majJetons(); syncMiroirs();
+  miroirs.forEach(m=>m.classList.toggle("cible-assignation", !!nomChoisi && !m.value.trim()));
+};
+
+miroirs.forEach(m=>{
+  m.addEventListener("input", ()=>{
+    const c = cases.find(x=>x.dataset.id===m.dataset.ref);
+    if(c){ c.value = m.value; }
+    majJetons();
+  });
+  m.addEventListener("pointerdown",(e)=>{
+    if(nomChoisi && !m.value.trim()){
+      e.preventDefault();
+      m.value = nomChoisi;
+      const c = cases.find(x=>x.dataset.id===m.dataset.ref);
+      if(c) c.value = nomChoisi;
+      nomChoisi = null;
+      majJetons();
+    }
+  });
+});
+
+document.querySelectorAll(".onglet").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    document.querySelectorAll(".onglet").forEach(x=>x.classList.toggle("actif", x===b));
+    document.getElementById("vue-tableau").style.display = b.dataset.vue==="vue-tableau" ? "" : "none";
+    document.getElementById("vue-plan").style.display    = b.dataset.vue==="vue-plan"    ? "" : "none";
+  });
+});
+
+document.getElementById("btn-courriel").addEventListener("click", ()=>{
+  const d = valeurCase("date"), p = valeurCase("periode");
+  const lignes = [];
+  lignes.push("PLAN DE POSITIONNEMENT — McDonald's St-Jovite #22028");
+  lignes.push("Date : " + (d||"—") + (p ? "   Période : " + p : ""));
+  document.querySelectorAll("#vue-plan .zone").forEach(z=>{
+    const items = [];
+    z.querySelectorAll(".carte").forEach(c=>{
+      const ref = c.dataset.ref;
+      const get = sel => { const e=c.querySelector(sel); return e ? e.value.trim() : ""; };
+      const nom = get(".miroir"),
+            ta  = get('[data-id="t1:'+ref+'"]'),
+            tb  = get('[data-id="t2:'+ref+'"]'),
+            ob  = get('[data-id="obj:'+ref+'"]');
+      if(nom||ta||tb||ob){
+        let l = "- " + c.querySelector(".carte-titre").textContent + " : " + (nom||"—");
+        if(ta) l += " | Tâche primaire : " + ta;
+        if(tb) l += " | Tâche secondaire : " + tb;
+        if(ob) l += " | Objectif : " + ob;
+        items.push(l);
+      }
+    });
+    if(items.length){
+      lignes.push("");
+      lignes.push("=== " + z.querySelector(".zone-titre").textContent.toUpperCase() + " ===");
+      items.forEach(i=>lignes.push(i));
+    }
+  });
+  const sujet = "Plan de positionnement" + (d ? " — " + d : "") + (p ? " — " + p : "");
+  location.href = "mailto:?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(lignes.join("\n"));
+});
+
+(async function init(){
+  const r = await stGet("stjovite-plan-roster");
+  if(r){ try{ roster = JSON.parse(r); }catch(e){ roster=[]; } }
+  if(!Array.isArray(roster) || roster.length===0){ roster = [...ROSTER_DEFAUT]; }
+  majJetons();
+  const derniere = await stGet("stjovite-tableau:dernier");
+  if(derniere){
+    const brut = await stGet(derniere);
+    if(brut){
+      try{
+        const o = JSON.parse(brut);
+        cases.forEach(c=>{ if(o[c.dataset.id]) c.value = o[c.dataset.id]; });
+        majJetons();
+      }catch(e){}
+    }
+  }
+})();
+</script>
+</body>
+</html>
