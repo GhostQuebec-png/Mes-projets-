@@ -1,0 +1,1726 @@
+<!DOCTYPE html>
+<!--
+  PRÉPARATION DES QUARTS — McDonald's St-Jovite #22028
+  Outil conçu et développé par Romuald Luce.
+  © 2026 Romuald Luce. Tous droits réservés.
+  Toute reproduction, modification ou réutilisation sans autorisation écrite est interdite.
+-->
+<html lang="fr">
+<head>
+<meta name="author" content="Romuald Luce">
+<meta name="copyright" content="© 2026 Romuald Luce — Tous droits réservés">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Préparation des quarts — St-Jovite #22028</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
+<style>  :root{
+    --rouge:#DA291C; --rouge-fonce:#B11E14; --noir:#1D1D1B; --bar:#2B2B2B;
+    --ligne:#C9C9C4; --label:#5F5F5A; --or:#FFC72C; --papier:#FFFFFF; --fond:#E9E9E2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; background:var(--fond); color:var(--noir); -webkit-print-color-adjust:exact; print-color-adjust:exact;}
+  .cache{display:none !important;}
+
+  /* ----- Écran de code & menu (plein écran sombre) ----- */
+  .ecran{min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    background:radial-gradient(120% 120% at 50% 0%, #3a3a38 0%, #232321 55%, #191917 100%); background-color:#222220; padding:24px; position:relative;}
+  .carte-code{background:#fff; border-radius:16px; padding:34px 30px 26px; width:100%; max-width:380px; text-align:center; box-shadow:0 18px 50px rgba(0,0,0,.45);}
+  .carte-code .badge-rond{display:inline-block; background:var(--rouge); color:#fff; font-weight:800; font-size:13px; letter-spacing:.5px; padding:7px 16px; border-radius:30px; box-shadow:0 2px 0 var(--rouge-fonce); margin-bottom:16px;}
+  .carte-code h1{font-size:18px; font-weight:800; margin:0 0 4px; letter-spacing:.2px;}
+  .carte-code p{font-size:13px; color:#666; margin:0 0 18px;}
+  .carte-code input{width:100%; text-align:center; font-size:20px; font-weight:700; letter-spacing:4px; text-transform:uppercase; padding:12px; border:2px solid var(--ligne); border-radius:10px; outline:none; font-family:inherit;}
+  .carte-code input:focus{border-color:var(--rouge);}
+  .carte-code .btn-entrer{width:100%; margin-top:14px; background:var(--noir); color:#fff; border:none; border-radius:10px; padding:13px; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit;}
+  .carte-code .btn-entrer:active{transform:translateY(1px);}
+  .err{color:var(--rouge); font-size:13px; font-weight:600; min-height:18px; margin-top:10px;}
+  .filigrane-bas{position:absolute; bottom:16px; left:0; right:0; text-align:center; color:#8b8b87; font-size:11px; font-weight:600; letter-spacing:.4px;}
+
+  /* Menu */
+  #menu .entete-menu{color:#fff; text-align:center; margin-bottom:22px;}
+  #menu .entete-menu .badge-rond{display:inline-block; background:var(--rouge); color:#fff; font-weight:800; font-size:12px; padding:6px 14px; border-radius:30px; box-shadow:0 2px 0 var(--rouge-fonce); margin-bottom:12px;}
+  #menu .entete-menu h2{font-size:22px; margin:0 0 4px; font-weight:800;}
+  #menu .entete-menu .bienv{font-size:14px; color:#d9d9d4;}
+  #menu .entete-menu .bienv b{color:var(--or);}
+  .grille-menu{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px; width:100%; max-width:760px;}
+  .tuile{background:#fff; border:none; border-radius:14px; padding:22px 20px; text-align:left; cursor:pointer; font-family:inherit; box-shadow:0 8px 24px rgba(0,0,0,.3); transition:transform .12s;}
+  .tuile:hover{transform:translateY(-3px);}
+  .tuile .t-titre{font-size:16px; font-weight:800; color:var(--noir);}
+  .tuile .t-ss{font-size:12px; color:#777; margin-top:3px;}
+  .tuile .puce{display:inline-block; width:34px; height:6px; border-radius:4px; background:var(--rouge); margin-bottom:12px;}
+  .tuile.bientot{opacity:.5; cursor:not-allowed; box-shadow:none; outline:1px dashed #777; background:#2c2c2a;}
+  .tuile.bientot .t-titre{color:#cfcfca;} .tuile.bientot .t-ss{color:#9a9a95;} .tuile.bientot .puce{background:#6a6a66;}
+  .btn-verrou{margin-top:24px; background:transparent; color:#cfcfca; border:1px solid #555; border-radius:10px; padding:10px 22px; font-size:13px; font-weight:600; cursor:pointer; font-family:inherit;}
+
+  /* ----- Barre de navigation des vues ----- */
+  .barre-nav{max-width:820px; margin:16px auto 6px; padding:0 14px; display:flex; flex-wrap:wrap; align-items:center; gap:8px;}
+  .barre-nav .compteur{margin-left:auto; font-size:13px; color:#444; font-weight:600; background:#fff; border:1px solid var(--ligne); border-radius:20px; padding:6px 14px;}
+  .btn{font-family:inherit; font-size:13px; font-weight:700; cursor:pointer; border:none; border-radius:8px; padding:9px 16px; color:#fff; background:var(--noir);}
+  .btn.rouge{background:var(--rouge);} .btn.clair{background:#fff; color:var(--noir); border:1px solid var(--ligne);}
+  .btn:active{transform:translateY(1px);}
+
+  /* ----- Feuille A4 ----- */
+  .feuille{width:794px; min-height:1123px; margin:0 auto 40px; background:var(--papier); box-shadow:0 6px 26px rgba(0,0,0,.18); padding:14mm 12mm 10mm; position:relative; display:flex; flex-direction:column;}
+  .entete{display:flex; align-items:flex-start; justify-content:space-between; gap:14px;}
+  .titre h1{font-size:21px; font-weight:800; letter-spacing:.4px; margin:0; text-transform:uppercase;}
+  .titre .ss{font-size:11px; color:var(--label); margin-top:2px; letter-spacing:.5px;}
+  .badge{background:var(--rouge); color:#fff; text-align:center; border-radius:7px; padding:8px 14px; font-weight:800; line-height:1.1; font-size:13px; white-space:nowrap; box-shadow:0 2px 0 var(--rouge-fonce);}
+  .badge small{display:block; font-size:11px; font-weight:700; opacity:.92;}
+  .ancrage{background:#FFF7E0; border:1px solid var(--or); border-radius:8px; padding:7px 12px; margin-bottom:11px; font-size:9.5px; line-height:1.4; color:#6b5a16;}
+  .regle-or{height:3px; background:var(--or); border-radius:2px; margin:10px 0 12px;}
+  .meta{display:grid; grid-template-columns:0.9fr 1.2fr 1fr; gap:10px; margin-bottom:12px;}
+  .champ{border:1px solid var(--ligne); border-radius:6px; padding:5px 9px; background:#fcfcfb;}
+  .champ label{display:block; font-size:9px; font-weight:700; color:var(--label); text-transform:uppercase; letter-spacing:.6px; margin-bottom:2px;}
+  .champ input,.champ select{width:100%; border:none; background:transparent; font-family:inherit; font-size:13px; font-weight:600; color:var(--noir); padding:1px 0; outline:none;}
+  .champ select{cursor:pointer;}
+  .corps{display:grid; grid-template-columns:1.28fr 1fr; gap:14px; flex:1;}
+  .col{display:flex; flex-direction:column; gap:12px;}
+  .bloc{border:1px solid var(--noir); border-radius:7px; overflow:hidden;}
+  .bloc-titre{background:var(--bar); color:#fff; font-size:11px; font-weight:800; letter-spacing:.7px; text-transform:uppercase; padding:5px 10px; display:flex; justify-content:space-between; align-items:center;}
+  .bloc-titre .fait-h{font-size:9px; font-weight:700; opacity:.85; letter-spacing:.5px;}
+  .ligne{display:flex; align-items:center; gap:8px; padding:4px 10px; border-top:1px solid var(--ligne); font-size:10.5px; line-height:1.25; cursor:pointer; user-select:none;}
+  .bloc-titre + .ligne{border-top:none;}
+  .ligne:hover{background:#faf7f2;}
+  .ligne .txt{flex:1;} .ligne .txt span{color:var(--label);}
+  .ck{appearance:none; -webkit-appearance:none; flex:0 0 auto; width:15px; height:15px; border:1.6px solid #8a8a85; border-radius:3px; background:#fff; cursor:pointer; position:relative;}
+  .ck:checked{background:var(--rouge); border-color:var(--rouge);}
+  .ck:checked::after{content:"\2713"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:900;}
+  .matrice{border:1px solid var(--noir); border-radius:7px; overflow:hidden;}
+  .matrice-titre{background:#fff; color:var(--noir); text-align:center; font-size:10px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; padding:5px; border-bottom:1px solid var(--noir);}
+  table.mx{width:100%; border-collapse:collapse; table-layout:fixed;}
+  table.mx th{background:var(--bar); color:#fff; font-size:8.5px; font-weight:700; padding:4px 3px; text-align:center; line-height:1.15; border-right:1px solid #4a4a4a; vertical-align:middle;}
+  table.mx th:last-child{border-right:none;}
+  table.mx td{border:1px solid var(--ligne); height:34px; vertical-align:top; padding:3px 4px; font-size:9.5px; line-height:1.2;}
+  table.mx td[contenteditable]:empty:focus{outline:2px solid var(--or);}
+  .pied{margin-top:12px; padding-top:7px; border-top:1px solid var(--ligne); display:flex; justify-content:space-between; align-items:center; font-size:9px; color:var(--label); letter-spacing:.3px;}
+  .pied .proprio{font-weight:700; color:#6f6f6a;}
+
+  @page{size:A4 portrait; margin:0;}
+  @media print{
+    body{background:#fff;}
+    .no-print,.barre-nav{display:none !important;}
+    .feuille{box-shadow:none; margin:0; width:auto; min-height:auto; padding:5mm 9mm;}
+    .ligne:hover,.ligne{background:transparent;}
+    /* Compactage pour viser une page par fiche, tout en restant lisible */
+    .ligne{padding:1.4px 8px; font-size:9.5px; line-height:1.1;}
+    .bloc-titre{padding:2.5px 9px; font-size:10.5px;}
+    .col{gap:6px;} .corps{gap:10px;}
+    .meta{margin-bottom:5px;} .meta .champ{padding:3px 9px;} .regle-or{margin:4px 0 5px;}
+    .ancrage{margin-bottom:5px; padding:5px 11px;}
+    table.mx td{height:20px;} table.mx th{padding:2.5px;}
+    .pied{margin-top:3px; padding-top:3px; font-size:8.5px;}
+    /* Coupures propres : ne jamais scinder un bloc, une ligne ou la matrice */
+    .bloc, .matrice{break-inside:avoid; page-break-inside:avoid;}
+    .ligne{break-inside:avoid; page-break-inside:avoid;}
+  }
+  @media (max-width:840px){
+    .feuille{width:100%; min-height:auto; padding:18px 14px 26px;}
+    .corps{grid-template-columns:1fr;} .meta{grid-template-columns:1fr;}
+  }
+</style>
+<style>
+/* ===== Styles du Plan de répartition — confinés à #vue-repartition ===== */
+#vue-repartition{min-height:100vh;}
+  #vue-repartition{
+    --plateau:#F7F5F0;
+    --cadre:#1D1D1B;
+    --encre:#1D1D1B;
+    --gris-doux:#E4E0D8;
+    --gris-equip:#D7D2C8;
+    --trait:#C6C0B4;
+    --jaune:#FFC72C;
+    --rouge:#DA291C;
+    --bleu:#3B6FA8;
+    --vert:#3E8E5A;
+    --violet:#8B7BB5;
+    --feutre:#1B4FA0;
+  }
+  #vue-repartition *{box-sizing:border-box;margin:0;padding:0}
+  #vue-repartition{font-family:"Barlow Condensed","Segoe UI",system-ui,sans-serif;background:#E9E9E2;padding:14px;color:var(--encre)}
+  #vue-repartition .page{max-width:1260px;margin:0 auto}
+  #vue-repartition h1{font-size:1.25rem;text-transform:uppercase;letter-spacing:.08em;color:var(--cadre);margin-bottom:10px;font-weight:700}
+  #vue-repartition h1 small{display:block;font-size:.72rem;color:#7A746A;letter-spacing:.16em;font-weight:600}
+
+  /* ── barre équipe ── */
+  #vue-repartition .equipe{background:#fff;border:1.5px solid var(--trait);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+  #vue-repartition .equipe-titre{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.14em;
+    background:var(--cadre);color:#fff;display:inline-block;padding:4px 14px;border-radius:4px;margin-bottom:10px}
+  #vue-repartition .equipe-saisie{display:flex;gap:8px;margin-bottom:10px}
+  #vue-repartition .equipe-saisie input{flex:1;font-family:"Segoe UI",system-ui,sans-serif;font-size:.9rem;padding:8px 12px;border:1.5px solid var(--gris-doux);border-radius:6px}
+  #vue-repartition .equipe-saisie button{font:inherit;font-size:.95rem;font-weight:700;letter-spacing:.04em;padding:8px 18px;border:none;border-radius:6px;
+    background:var(--rouge);color:#fff;cursor:pointer}
+  #vue-repartition .equipe-saisie button:hover{filter:brightness(.92)}
+  #vue-repartition .jetons{display:flex;flex-wrap:wrap;gap:8px}
+  #vue-repartition .jeton{display:inline-flex;align-items:center;gap:6px;background:var(--jaune);border:1.5px solid var(--cadre);
+    border-radius:999px;padding:4px 13px;font-weight:600;font-size:.95rem;cursor:pointer;user-select:none}
+  #vue-repartition .jeton:hover{transform:translateY(-1px)}
+  #vue-repartition .jeton.choisi{background:var(--cadre);color:var(--jaune);box-shadow:0 0 0 3px var(--jaune)}
+  #vue-repartition .jeton.place{background:#E6F1E9;border-color:var(--vert);color:var(--vert)}
+  #vue-repartition .jeton .x{font-weight:800;opacity:.5;padding:0 2px}
+  #vue-repartition .jeton .x:hover{opacity:1}
+  #vue-repartition .aide{font-family:"Segoe UI",system-ui,sans-serif;font-size:.76rem;color:#7A746A;margin-top:8px}
+
+  /* ── cadre du tableau ── */
+  #vue-repartition .frame{background:var(--cadre);border-radius:14px;padding:10px;box-shadow:0 10px 34px rgba(0,0,0,.22)}
+  #vue-repartition .liseret{height:7px;background:var(--jaune);border-radius:4px}
+  #vue-repartition .liseret.haut{margin-bottom:8px}
+  #vue-repartition .liseret.bas{margin-top:8px}
+  #vue-repartition .board-wrap{container-type:inline-size;position:relative;width:100%;aspect-ratio:1316/924;
+    background:var(--plateau);border-radius:8px;overflow:hidden}
+
+  #vue-repartition .el{position:absolute}
+  #vue-repartition .lbl-entete{display:flex;align-items:center;font-weight:700;font-size:2.2cqw;letter-spacing:.04em;text-transform:uppercase}
+  #vue-repartition .pl-badge{display:flex;align-items:center;justify-content:center;text-align:center;
+    background:var(--rouge);color:#fff;font-weight:700;font-size:1.15cqw;letter-spacing:.12em;
+    border-radius:6px;line-height:1.25}
+  #vue-repartition .divider{border-top:3px dashed var(--jaune)}
+  #vue-repartition .strip{background:var(--gris-equip);border-radius:3px}
+  #vue-repartition .wall{background:var(--cadre);border-radius:3px;opacity:.85}
+  #vue-repartition .bar-dark,#vue-repartition .bar-rouge,#vue-repartition .bar-bleu,#vue-repartition .bar-violet{
+    display:flex;align-items:center;justify-content:center;color:#fff;
+    font-weight:600;font-size:1.15cqw;letter-spacing:.12em;border-radius:4px}
+  #vue-repartition .bar-dark{background:var(--cadre)}
+  #vue-repartition .bar-rouge{background:var(--rouge)}
+  #vue-repartition .bar-bleu{background:var(--bleu)}
+  #vue-repartition .bar-violet{background:var(--violet)}
+  #vue-repartition .row-blanche{background:#fff;border:1px solid var(--gris-doux);border-radius:4px}
+  #vue-repartition .lbl-station,#vue-repartition .lbl-station-2l{display:flex;align-items:center;justify-content:center;text-align:center;
+    font-weight:700;font-size:1.2cqw;letter-spacing:.1em;color:var(--encre);line-height:1.2}
+  #vue-repartition .tag-gris{display:flex;align-items:center;justify-content:center;background:var(--gris-doux);
+    border:1px solid var(--trait);border-radius:4px;font-weight:700;font-size:1.2cqw;letter-spacing:.12em}
+  #vue-repartition .tag-bleu{display:flex;align-items:center;justify-content:center;background:var(--bleu);color:#fff;
+    border-radius:3px;font-weight:600;font-size:1cqw;letter-spacing:.14em}
+  #vue-repartition .tag-vert{display:flex;align-items:center;justify-content:center;text-align:center;background:var(--vert);color:#fff;
+    border-radius:4px;font-weight:600;font-size:.85cqw;letter-spacing:.08em;line-height:1.3}
+  #vue-repartition .tag-rouge{display:flex;align-items:center;justify-content:center;background:var(--rouge);color:#fff;
+    border-radius:4px;font-weight:700;font-size:1.6cqw}
+  #vue-repartition .tag-accent{display:flex;align-items:center;justify-content:center;background:var(--rouge);color:#fff;
+    border-radius:4px;font-weight:700;font-size:1.5cqw}
+  #vue-repartition .equip,#vue-repartition .equip-mini,#vue-repartition .equip-strip,#vue-repartition .equip-tall{background:var(--gris-equip);border-radius:4px;
+    display:flex;align-items:flex-start;justify-content:center;
+    color:#8C857A;font-weight:600;font-size:.95cqw;letter-spacing:.1em;text-transform:uppercase;padding-top:.3em}
+  #vue-repartition .equip-mini,#vue-repartition .equip-strip,#vue-repartition .equip-tall{padding-top:0}
+  #vue-repartition .equip-bas{align-items:flex-end;padding-bottom:.35em;padding-top:0}
+  #vue-repartition .col-vert{background:var(--gris-doux);border-radius:4px;display:flex;align-items:center;justify-content:center}
+  #vue-repartition .col-vert{writing-mode:vertical-rl;text-orientation:mixed;font-weight:700;font-size:1.2cqw;letter-spacing:.3em;color:#8C857A}
+  #vue-repartition .col-fond{background:var(--gris-doux);border-radius:4px}
+  #vue-repartition .col-sect{display:flex;align-items:center;justify-content:center;text-align:center;
+    font-weight:700;font-size:.8cqw;letter-spacing:.06em;color:#8C857A;text-transform:uppercase;
+    line-height:1.45;padding:0 .15em}
+  #vue-repartition .col-sect + .col-sect{border-top:1.5px solid var(--trait)}
+  #vue-repartition .outline{border:2px solid var(--encre);border-radius:4px}
+  #vue-repartition .outline-lbl{display:flex;align-items:center;justify-content:center;border:2px solid var(--encre);border-radius:4px;
+    color:var(--rouge);font-weight:700;font-size:1.35cqw;letter-spacing:.14em}
+  #vue-repartition .pl-ecran{display:flex;align-items:center;justify-content:center;background:var(--cadre);color:#fff;border-radius:6px;font-weight:600;font-size:1cqw;letter-spacing:.18em;border:2px solid #4A4540}
+  #vue-repartition .etoile{display:flex;align-items:center;justify-content:center;font-size:2.8cqw;color:var(--vert)}
+  #vue-repartition .equip-3{background:var(--gris-equip);border-radius:4px;display:flex;align-items:center;justify-content:space-between;padding:0 .5em;color:#7D766B;font-weight:600;font-size:.75cqw;letter-spacing:.06em}
+  #vue-repartition .card-cibles{background:#fff;border:1.5px solid var(--trait);border-radius:8px}
+  #vue-repartition .cell-head{display:flex;align-items:center;justify-content:center;text-align:center;
+    background:var(--plateau);border:1.5px solid var(--encre);border-radius:4px 4px 0 0;
+    font-weight:700;font-size:1cqw;letter-spacing:.08em;line-height:1.2}
+
+  /* ── cases d'écriture ── */
+  #vue-repartition .case{position:absolute;background:#fff;border:1.5px solid var(--trait);border-radius:5px;
+    font-family:Caveat,"Segoe Print","Bradley Hand",cursive;
+    font-weight:700;color:var(--feutre);text-align:center;
+    font-size:2cqw;padding:0 .3em;outline:none;transition:box-shadow .12s,border-color .12s;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.05)}
+  #vue-repartition .case:hover{border-color:var(--jaune);box-shadow:0 0 0 2px rgba(245,184,46,.45);cursor:text}
+  #vue-repartition .case:focus{border-color:var(--jaune);box-shadow:0 0 0 3px var(--jaune);background:#FFFDF4}
+  #vue-repartition .case.cible-assignation{border-color:var(--vert);box-shadow:0 0 0 2px rgba(62,142,90,.5);background:#F2F8F4}
+  #vue-repartition .case[data-id="date"],#vue-repartition .case[data-id="periode"]{font-family:inherit;font-weight:700;font-size:1.7cqw;color:var(--encre);letter-spacing:.04em}
+  #vue-repartition .case[data-id="suggestion"]{text-align:left;padding-left:.6em}
+
+  /* ── actions ── */
+  #vue-repartition .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  #vue-repartition .actions button{font:inherit;font-size:.95rem;font-weight:700;letter-spacing:.04em;padding:10px 20px;border-radius:7px;
+    border:1.5px solid var(--cadre);background:#fff;cursor:pointer}
+  #vue-repartition .actions button.principal{background:var(--rouge);border-color:var(--rouge);color:#fff}
+  #vue-repartition .actions button:hover{transform:translateY(-1px)}
+  #vue-repartition .statut{font-family:"Segoe UI",system-ui,sans-serif;font-size:.8rem;color:#7A746A;align-self:center;margin-left:auto}
+
+  @media print{
+    #vue-repartition{background:#fff;padding:0}
+    #vue-repartition .equipe,#vue-repartition .actions,#vue-repartition h1 small,#vue-repartition .aide,#vue-repartition .onglets,#vue-repartition #vue-plan{display:none!important}
+  #vue-repartition #vue-tableau{display:block!important}
+    #vue-repartition .page{max-width:none}
+    #vue-repartition .frame{box-shadow:none;border-radius:0;padding:6px}
+    #vue-repartition .case{box-shadow:none!important}
+  }
+  #vue-repartition .onglets{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  #vue-repartition .onglet{font:inherit;font-size:.95rem;font-weight:700;letter-spacing:.05em;padding:9px 22px;border-radius:8px;
+    border:1.5px solid var(--trait);background:#fff;cursor:pointer;color:var(--encre)}
+  #vue-repartition .onglet.actif{background:var(--encre);color:#fff;border-color:var(--encre)}
+  #vue-repartition #vue-plan{background:#fff;border:1.5px solid var(--trait);border-radius:12px;padding:16px 16px 6px}
+  #vue-repartition .zone{margin-bottom:18px}
+  #vue-repartition .zone-titre{font-weight:800;text-transform:uppercase;letter-spacing:.12em;font-size:.85rem;
+    background:var(--encre);color:#fff;padding:6px 14px;border-radius:6px;display:inline-block;margin-bottom:10px}
+  #vue-repartition .cartes{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+  #vue-repartition .carte{border:1.5px solid var(--gris-doux);border-radius:8px;padding:10px;background:#fffdf9}
+  #vue-repartition .carte-titre{font-weight:700;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;color:#5d564c}
+  #vue-repartition .carte input{width:100%;box-sizing:border-box;font-family:"Segoe UI",system-ui,sans-serif;font-size:.9rem;
+    padding:6px 8px;border:1.5px solid var(--gris-doux);border-radius:6px;margin-bottom:6px;background:#fff}
+  #vue-repartition .carte .miroir{font-weight:700}
+  #vue-repartition .carte .lib{display:block;font-size:.64rem;text-transform:uppercase;letter-spacing:.08em;color:#8C857A;margin:2px 0}
+  #vue-repartition .carte .field{position:relative}
+  #vue-repartition .carte textarea.extra{box-sizing:border-box;width:100%;resize:none;overflow:hidden;
+    min-height:2.2em;padding:6px 8px;margin-bottom:6px;border:1.5px solid var(--gris-doux);
+    border-radius:6px;background:#fff;font-family:"Segoe UI",system-ui,sans-serif;
+    font-size:.82rem;line-height:1.32;white-space:pre-wrap;overflow-wrap:anywhere}
+  #vue-repartition .carte textarea.extra:focus{outline:none;border-color:var(--encre)}
+  #vue-repartition .suggest-box{position:absolute;left:0;right:0;top:calc(100% - 4px);z-index:60;background:#fff;
+    border:1.5px solid var(--encre);border-radius:8px;max-height:200px;overflow-y:auto;
+    box-shadow:0 8px 22px rgba(0,0,0,.18)}
+  #vue-repartition .suggest-box .opt{padding:8px 11px;font-size:.8rem;line-height:1.25;cursor:pointer;
+    border-bottom:1px solid var(--gris-doux)}
+  #vue-repartition .suggest-box .opt:last-child{border-bottom:none}
+  #vue-repartition .suggest-box .opt:active,#vue-repartition .suggest-box .opt:hover{background:var(--gris-doux)}
+  #vue-repartition .copyright{margin-top:18px;padding:12px 4px 4px;border-top:1px solid var(--gris-doux);
+    font-size:.66rem;line-height:1.5;color:#8C857A;text-align:center;break-inside:avoid}
+
+</style>
+</head>
+<body>
+
+  <!-- ÉCRAN DE CODE -->
+  <div id="ecran-code" class="ecran">
+    <div class="carte-code">
+      <span class="badge-rond">ST-JOVITE #22028</span>
+      <h1>Préparation des quarts</h1>
+      <p>Entre ton code d'accès personnel</p>
+      <input id="code" type="text" inputmode="latin" autocomplete="off" autocapitalize="characters" maxlength="8" placeholder="• • • • • • • •">
+      <button class="btn-entrer" id="btn-entrer">Entrer</button>
+      <div class="err" id="err"></div>
+    </div>
+    <div class="filigrane-bas">Conçu et développé par Romuald Luce · © 2026 · usage interne McDonald's St-Jovite</div>
+  </div>
+
+  <!-- MENU -->
+  <div id="menu" class="ecran cache">
+    <div class="entete-menu">
+      <span class="badge-rond">ST-JOVITE #22028</span>
+      <h2>Tes fiches de préparation</h2>
+      <div class="bienv">Connecté : <b id="qui">—</b></div>
+    </div>
+    <div class="grille-menu">
+      <button class="tuile" data-vue="comptoir"><span class="puce"></span><div class="t-titre">Liste pré-quart — Comptoir</div><div class="t-ss">Salle à manger · comptoir · hygiène</div></button>
+      <button class="tuile" data-vue="sav"><span class="puce"></span><div class="t-titre">Liste pré-quart — SAV</div><div class="t-ss">Service au volant · McCafé · hygiène</div></button>
+      <button class="tuile" data-vue="cuisine"><span class="puce"></span><div class="t-titre">Liste pré-quart — Cuisine</div><div class="t-ss">Production · chartes · hygiène</div></button>
+      <button class="tuile" data-vue="repartition"><span class="puce"></span><div class="t-titre">Plan de répartition</div><div class="t-ss">Positionnement de l'équipe · tâches et objectifs</div></button>
+      <button class="tuile" data-vue="postquart"><span class="puce"></span><div class="t-titre">Liste post-quart</div><div class="t-ss">Clôture et passation</div></button>
+    </div>
+    <button class="btn-verrou" onclick="verrouiller()">Verrouiller la session</button>
+    <div class="filigrane-bas">Conçu et développé par Romuald Luce · © 2026 · Tous droits réservés</div>
+  </div>
+
+  <!-- VUES (fiches) -->
+    <section class="vue cache" id="vue-comptoir">
+      <div class="barre-nav no-print">
+        <button class="btn clair" onclick="retourMenu()">← Menu</button>
+        <button class="btn rouge" onclick="window.print()">Imprimer / PDF</button>
+        <button class="btn clair btn-mail">Courriel</button>
+        <button class="btn clair btn-copier">Copier</button>
+        <button class="btn clair btn-date">Dater aujourd'hui</button>
+        <button class="btn clair btn-reset">Réinitialiser</button>
+        <span class="compteur">0 / 0 fait</span>
+      </div>
+      <div class="feuille">
+        <div class="entete">
+          <div class="titre"><h1>Liste pré-quart — Comptoir</h1>
+            <div class="ss">À compléter la veille du quart — à transmettre à la gestion</div></div>
+          <div class="badge">ST-JOVITE<small>#22028</small></div>
+        </div>
+        <div class="regle-or"></div>
+        <div class="meta">
+          <div class="champ"><label>Date</label><input type="date" class="in-date"></div>
+          <div class="champ"><label>Leader en charge du quart</label>
+            <select class="sel-leader"><option value="">—</option>
+              <option>Romuald Luce</option>
+              <option>Valérie Raymond</option>
+              <option>Zahira Anouar</option>
+              <option>Achraf Saktiwy</option>
+              <option>Abderrazzak Lachhab</option>
+              <option>Jimmy Lapointe</option>
+              <option>Mustapha El Ouagari</option>
+              <option>Marie-Josée Duplessis</option>
+            </select></div>
+          <div class="champ"><label>Période de la journée</label>
+            <select class="sel-periode"><option value="">—</option>
+              <option>Open (dîner)</option>
+              <option>Close (souper)</option>
+            </select></div>
+        </div>
+        <div class="corps">
+          <div class="col">
+          <div class="bloc">
+            <div class="bloc-titre"><span>Salle à manger</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Porte d'entrée</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Vitre dans la salle à manger</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Plancher propre <span>(si plancher mouillé = pancarte)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Poubelles</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Chaises</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Chaises hautes</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Tables</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Comptoir client <span>(ketchup, serviettes de table, pailles, couvercles, poubelles)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Salle de bain <span>(miroirs, papiers de toilette, poubelles, plancher, savon à mains, table à langer)</span></span><input type="checkbox" class="ck"></label>
+          </div>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Comptoir</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Fonds de caisse / tiroirs-caisses approvisionnés <span>(selon la procédure du restaurant)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Remplissage <span>(condiments, verres, couverts, crème/lait, sucre)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Frigo <span>(propre, le plat d'eau présent, les dates, thermomètres, …)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Lait glacé et garnitures remplis et avec timer</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Station McLivraison préparée <span>(sac, support à verre, papier collant, ustensiles, …)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Localisateur + Borne avec les factures</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Pâtisserie <span>(bonne quantité selon les chartes, propreté du présentoir et timer)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Station à frite <span>(emballages, 2 salières, distributeur remplis, …)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Huiles écumées et filtrées</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Nettoyage de la bine à frite <span>(close)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Bertha — nettoyage complet extérieur et intérieur <span>(close)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Station à poutine <span>(fromage remplis avec timers, sauce avec timer, …)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Glace <span>(salle à manger, station à boissons)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Rouleaux d'imprimantes</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Poubelles</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Balai-moppe</span><input type="checkbox" class="ck"></label>
+          </div>
+          </div>
+          <div class="col">
+          <div class="matrice">
+            <div class="matrice-titre">Liste matrice de priorité</div>
+            <table class="mx"><thead><tr><th>1 — Santé et sécurité</th><th>2 — Qualité et service</th><th>3 — Confort et commodité</th><th>4 — Apparence</th></tr></thead>
+            <tbody>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+            </tbody></table>
+          </div>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Hygiène alimentaire / propreté</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Seau à linges timer + bonne concentration 100 ppm</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Bouteille assainissant + peroxyde rempli + timer</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Station lavage de main</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Verre de glace remplis avec un fond d'eau + timer sur la base</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Aire de travail propre</span><input type="checkbox" class="ck"></label>
+          </div>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Sécurité</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Sols secs et sans risque de glissade <span>(pancarte posée si zone mouillée)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Équipement endommagé ou défectueux identifié et signalé</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Sorties de secours et voies de circulation dégagées</span><input type="checkbox" class="ck"></label>
+          </div>
+          </div>
+        </div>
+        <div class="pied">
+          <span>McDonald's St-Jovite #22028 — usage interne</span>
+          <span class="proprio">© 2026 Romuald Luce · conçu et développé par Romuald Luce</span>
+        </div>
+      </div>
+    </section>
+    <section class="vue cache" id="vue-sav">
+      <div class="barre-nav no-print">
+        <button class="btn clair" onclick="retourMenu()">← Menu</button>
+        <button class="btn rouge" onclick="window.print()">Imprimer / PDF</button>
+        <button class="btn clair btn-mail">Courriel</button>
+        <button class="btn clair btn-copier">Copier</button>
+        <button class="btn clair btn-date">Dater aujourd'hui</button>
+        <button class="btn clair btn-reset">Réinitialiser</button>
+        <span class="compteur">0 / 0 fait</span>
+      </div>
+      <div class="feuille">
+        <div class="entete">
+          <div class="titre"><h1>Liste pré-quart — SAV</h1>
+            <div class="ss">À compléter la veille du quart — à transmettre à la gestion</div></div>
+          <div class="badge">ST-JOVITE<small>#22028</small></div>
+        </div>
+        <div class="regle-or"></div>
+        <div class="meta">
+          <div class="champ"><label>Date</label><input type="date" class="in-date"></div>
+          <div class="champ"><label>Leader en charge du quart</label>
+            <select class="sel-leader"><option value="">—</option>
+              <option>Romuald Luce</option>
+              <option>Valérie Raymond</option>
+              <option>Zahira Anouar</option>
+              <option>Achraf Saktiwy</option>
+              <option>Abderrazzak Lachhab</option>
+              <option>Jimmy Lapointe</option>
+              <option>Mustapha El Ouagari</option>
+              <option>Marie-Josée Duplessis</option>
+            </select></div>
+          <div class="champ"><label>Période de la journée</label>
+            <select class="sel-periode"><option value="">—</option>
+              <option>Open (dîner)</option>
+              <option>Close (souper)</option>
+            </select></div>
+        </div>
+        <div class="corps">
+          <div class="col">
+          <div class="bloc">
+            <div class="bloc-titre"><span>SAV</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Fonds de caisse / tiroir du service au volant approvisionné <span>(selon la procédure du restaurant)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Remplissage <span>(condiments, verres, couverts, crème/lait)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Frigo <span>(propre, le plat d'eau présent, les dates, thermomètre, …)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Smoothie <span>(timer, glace rempli, sac rempli, buse propre)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Station McCafé <span>(frigo propre, lait et grains de café remplis, timer)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Verre de glace remplis de glace + un fond d'eau</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Glace <span>(station du service au volant, station à café)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Poubelles</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Casque avec les batteries remplies</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Rouleau d'imprimante <span>(caisse + McCafé + café)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Fenêtre dans le drive propre</span><input type="checkbox" class="ck"></label>
+          </div>
+          </div>
+          <div class="col">
+          <div class="matrice">
+            <div class="matrice-titre">Liste matrice de priorité</div>
+            <table class="mx"><thead><tr><th>1 — Santé et sécurité</th><th>2 — Qualité et service</th><th>3 — Confort et commodité</th><th>4 — Apparence</th></tr></thead>
+            <tbody>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+            </tbody></table>
+          </div>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Hygiène alimentaire</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Seau à linges timer + bonne concentration</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Bouteille assainissant + peroxyde rempli + timer</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Station lavage de main</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Aire de travail propre</span><input type="checkbox" class="ck"></label>
+          </div>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Sécurité</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Sols secs et sans risque de glissade <span>(pancarte posée si zone mouillée)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Équipement endommagé ou défectueux identifié et signalé</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Sorties de secours et voies de circulation dégagées</span><input type="checkbox" class="ck"></label>
+          </div>
+          </div>
+        </div>
+        <div class="pied">
+          <span>McDonald's St-Jovite #22028 — usage interne</span>
+          <span class="proprio">© 2026 Romuald Luce · conçu et développé par Romuald Luce</span>
+        </div>
+      </div>
+    </section>
+    <section class="vue cache" id="vue-cuisine">
+      <div class="barre-nav no-print">
+        <button class="btn clair" onclick="retourMenu()">← Menu</button>
+        <button class="btn rouge" onclick="window.print()">Imprimer / PDF</button>
+        <button class="btn clair btn-mail">Courriel</button>
+        <button class="btn clair btn-copier">Copier</button>
+        <button class="btn clair btn-date">Dater aujourd'hui</button>
+        <button class="btn clair btn-reset">Réinitialiser</button>
+        <span class="compteur">0 / 0 fait</span>
+      </div>
+      <div class="feuille">
+        <div class="entete">
+          <div class="titre"><h1>Liste pré-quart — Cuisine</h1>
+            <div class="ss">À compléter la veille du quart — à transmettre à la gestion</div></div>
+          <div class="badge">ST-JOVITE<small>#22028</small></div>
+        </div>
+        <div class="regle-or"></div>
+        <div class="meta">
+          <div class="champ"><label>Date</label><input type="date" class="in-date"></div>
+          <div class="champ"><label>Leader en charge du quart</label>
+            <select class="sel-leader"><option value="">—</option>
+              <option>Romuald Luce</option>
+              <option>Valérie Raymond</option>
+              <option>Zahira Anouar</option>
+              <option>Achraf Saktiwy</option>
+              <option>Abderrazzak Lachhab</option>
+              <option>Jimmy Lapointe</option>
+              <option>Mustapha El Ouagari</option>
+              <option>Marie-Josée Duplessis</option>
+            </select></div>
+          <div class="champ"><label>Période de la journée</label>
+            <select class="sel-periode"><option value="">—</option>
+              <option>Open (dîner)</option>
+              <option>Close (souper)</option>
+            </select></div>
+        </div>
+        <div class="corps">
+          <div class="col">
+          <div class="bloc">
+            <div class="bloc-titre"><span>Cuisine</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Table à préparation propre</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Frigos bien remplis + thermomètre + plat d'eau <span>(suit les chartes — 2 h)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Table d'assemblage <span>(emballage, sauces — rempli et timer — 24/2)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Tour à pain <span>(timer et suit les chartes)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Pains décongelés et timer</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Congélateur + thermomètre <span>(suit les chartes — 2 h)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Conditionnement du fromage, sauces et laitues <span>(timer 8 h)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Timer pour les ustensiles <span>(assainissement)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Timer sur tous les produits <span>(sauces, condiments, œufs, …)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">UHC conforme au service avec bon affichage et timers enclenchés <span>(lumière verte)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Timer au-dessus de l'UHC vérifié et enclenché</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Tranche-tomates nettoyé <span>(gant + goupille de sécurité)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Multiplex remplis et bonbonnes de CO2 remplies et enchaînées</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Huiles écumées et filtrées</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Poubelles</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Assaisonnement à viande <span>(les 2)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Teflons en bon état et respect du calendrier de rotation</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Nids d'abeille</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Station à œuf <span>(propre, KPT, ustensile jaune pour les œufs, le grattoir et la brosse)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Balai-moppe</span><input type="checkbox" class="ck"></label>
+          </div>
+          </div>
+          <div class="col">
+          <div class="matrice">
+            <div class="matrice-titre">Liste matrice de priorité</div>
+            <table class="mx"><thead><tr><th>1 — Santé et sécurité</th><th>2 — Qualité et service</th><th>3 — Confort et commodité</th><th>4 — Apparence</th></tr></thead>
+            <tbody>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+              <tr><td contenteditable></td><td contenteditable></td><td contenteditable></td><td contenteditable></td></tr>
+            </tbody></table>
+          </div>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Hygiène alimentaire</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Seau à linges timer + bonne concentration</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Bouteille assainissant + peroxyde rempli + timer</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Aire du lavabo <span>(3 cuves propres et remplis)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Bac à tomate vide, propre et retourné</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Station lavage de main</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Station de travail propre</span><input type="checkbox" class="ck"></label>
+          </div>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Arrière-cuisine / Entrepôts</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Porte arrière fermées et armées</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Aires des compacteurs sans déchets et propres</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Vestiaires employés et salles de bain</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Chambres froides — réfrigérateurs et congélateurs <span>(boîtes fermées, rien au sol, rotation FIFO)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Entrepôt sec <span>(boîtes coupées, rotation effectuée)</span></span><input type="checkbox" class="ck"></label>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Sécurité</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Sols secs et sans risque de glissade <span>(pancarte posée si zone mouillée)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Équipement endommagé ou défectueux identifié et signalé</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Sorties de secours et voies de circulation dégagées</span><input type="checkbox" class="ck"></label>
+          </div>
+          </div>
+        </div>
+        <div class="pied">
+          <span>McDonald's St-Jovite #22028 — usage interne</span>
+          <span class="proprio">© 2026 Romuald Luce · conçu et développé par Romuald Luce</span>
+        </div>
+      </div>
+    </section>
+    <section class="vue cache" id="vue-postquart">
+      <div class="barre-nav no-print">
+        <button class="btn clair" onclick="retourMenu()">← Menu</button>
+        <button class="btn rouge" onclick="window.print()">Imprimer / PDF</button>
+        <button class="btn clair btn-mail">Courriel</button>
+        <button class="btn clair btn-copier">Copier</button>
+        <button class="btn clair btn-date">Dater aujourd'hui</button>
+        <button class="btn clair btn-reset">Réinitialiser</button>
+        <span class="compteur">0 / 0 fait</span>
+      </div>
+      <div class="feuille">
+        <div class="entete">
+          <div class="titre"><h1>Liste post-quart</h1>
+            <div class="ss">Clôture et passation au gérant suivant</div></div>
+          <div class="badge">ST-JOVITE<small>#22028</small></div>
+        </div>
+        <div class="regle-or"></div>
+        <div class="ancrage">On ne ferme jamais, on passe la main. Le standard de sortie = le standard d'entrée. Tu laisses le restaurant au moins aussi prêt que tu voudrais le trouver en arrivant.</div>
+        <div class="meta">
+          <div class="champ"><label>Date</label><input type="date" class="in-date"></div>
+          <div class="champ"><label>Leader en charge du quart</label>
+            <select class="sel-leader"><option value="">—</option>
+              <option>Romuald Luce</option>
+              <option>Valérie Raymond</option>
+              <option>Zahira Anouar</option>
+              <option>Achraf Saktiwy</option>
+              <option>Abderrazzak Lachhab</option>
+              <option>Jimmy Lapointe</option>
+              <option>Mustapha El Ouagari</option>
+              <option>Marie-Josée Duplessis</option>
+            </select></div>
+          <div class="champ"><label>Période de la journée</label>
+            <select class="sel-periode"><option value="">—</option>
+              <option>Open (dîner)</option>
+              <option>Close (souper)</option>
+            </select></div>
+        </div>
+        <div class="corps">
+          <div class="col">
+          <div class="bloc">
+            <div class="bloc-titre"><span>Clôture &amp; passation — gérant de quart</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Bilan du quart <span>(ventes réelles vs prévisions · OPH · temps de service (COA / FCFP / RàP) · ventes à suggestion · plaintes)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Écarts identifiés et causes racines notés</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Débrief équipe <span>(points forts · un axe d'amélioration · une bonne pratique à réitérer — approche collective, jamais nominative)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Incidents consignés <span>(personnel · équipement · produits · sécurité)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Passation au gérant suivant <span>(état du restaurant · priorités · points de vigilance · équipements en panne ou en surveillance)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Relève et passation de la responsabilité des fonds <span>(selon la procédure du restaurant)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Planning du quart suivant étudié et positionnement préparé</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Affluence et événements à venir anticipés <span>(météo · tournois · livraisons)</span></span><input type="checkbox" class="ck"></label>
+          </div>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Remise en état — Salle à manger / Comptoir</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Salle remise à niveau <span>(tables · sols · poubelles vidées · chaises)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Salle de bain revérifiée et réapprovisionnée</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Comptoir client réapprovisionné <span>(serviettes · pailles · couvercles · condiments)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Stations de remplissage remontées + timers à jour</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Glace réapprovisionnée · rouleaux d'imprimante vérifiés</span><input type="checkbox" class="ck"></label>
+          </div>
+          </div>
+          <div class="col">
+          <div class="bloc">
+            <div class="bloc-titre"><span>Remise en état — Service au volant (SAV)</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">McCafé et Smoothie nettoyés, réapprovisionnés + timers</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Verres de glace refaits · fond d'eau</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Casques rangés en charge · batteries remplacées</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Fenêtre du drive propre · rouleaux caisse/café vérifiés</span><input type="checkbox" class="ck"></label>
+          </div>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Remise en état — Cuisine</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Tables de préparation et d'assemblage nettoyées, réapprovisionnées + timers</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Frigos et congélateurs <span>(températures consignées · dates vérifiées (FIFO) · plats d'eau)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Huiles écumées et filtrées <span>(selon le planning du restaurant)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">UHC : produits et timers à jour, pas de surstock laissé en attente</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Gaspillage (waste) consigné</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Produits sortis pour décongélation / tempering <span>(selon les besoins du quart suivant (ex. déjeuner))</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Téflons, nids d'abeille, station à œuf nettoyés</span><input type="checkbox" class="ck"></label>
+          </div>
+          <div class="bloc">
+            <div class="bloc-titre"><span>Hygiène / Conformité</span><span class="fait-h">Fait</span></div>
+            <label class="ligne"><span class="txt">Seaux à linge et bouteilles assainissant <span>(concentration et timers vérifiés)</span></span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">Lavabo 3 cuves propre et rempli</span><input type="checkbox" class="ck"></label>
+            <label class="ligne"><span class="txt">LVQHA et températures à jour dans BrandMate <span>(si le quart le requiert)</span></span><input type="checkbox" class="ck"></label>
+          </div>
+          </div>
+        </div>
+        <div class="pied">
+          <span>McDonald's St-Jovite #22028 — usage interne</span>
+          <span class="proprio">© 2026 Romuald Luce · conçu et développé par Romuald Luce</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="vue-repartition" class="vue-ext cache">
+      <div class="barre-nav no-print">
+        <button class="btn clair" onclick="retourMenu()">← Menu</button>
+      </div>
+<div class="page">
+  <h1>Plan de positionnement du quart
+    <small>McDonald's St-Jovite · Restaurant #22028 · version numérique du tableau</small>
+  </h1>
+
+  <div class="equipe">
+    <span class="equipe-titre">Équipe du quart</span>
+    <div class="equipe-saisie">
+      <input type="text" id="nouveau-nom" placeholder="Ajouter un prénom (ex. Romalie)" maxlength="30">
+      <button id="btn-ajouter">Ajouter</button>
+    </div>
+    <div class="jetons" id="jetons"></div>
+    <p class="aide">Touche un prénom puis touche une case du tableau pour l'assigner. Un prénom vert est déjà placé. Tu peux aussi écrire directement dans n'importe quelle case.</p>
+  </div>
+
+  <div class="onglets">
+    <button class="onglet actif" data-vue="vue-tableau">Tableau de positionnement</button>
+    <button class="onglet" data-vue="vue-plan">Plan détaillé — tâches et objectifs</button>
+  </div>
+
+  <div id="vue-tableau">
+  <div class="frame">
+    <div class="liseret haut"></div>
+    <div class="board-wrap" id="board">
+<div class="el lbl-entete" style="left:4.41%;top:1.52%;width:6.23%;height:3.90%;">Date&nbsp;:</div>
+<div class="el lbl-entete" style="left:32.37%;top:1.73%;width:8.51%;height:3.68%;">P&eacute;riode&nbsp;:</div>
+<div class="el pl-badge" style="left:84.95%;top:1.08%;width:11.55%;height:4.33%;">ST-JOVITE<br>#22028</div>
+<div class="el divider" style="left:3.04%;top:6.06%;width:93.47%;height:0.00%;"></div>
+<div class="el strip" style="left:20.14%;top:6.71%;width:65.73%;height:1.19%;"></div>
+<div class="el bar-dark" style="left:5.62%;top:7.47%;width:8.28%;height:3.25%;">LIGNE 2</div>
+<div class="el bar-dark" style="left:14.44%;top:7.47%;width:8.28%;height:3.25%;">LIGNE 1</div>
+<div class="el equip-mini" style="left:8.43%;top:11.26%;width:2.58%;height:2.81%;"></div>
+<div class="el equip-mini" style="left:17.25%;top:11.26%;width:2.58%;height:2.81%;"></div>
+<div class="el lbl-station" style="left:23.18%;top:12.77%;width:8.28%;height:1.95%;">FENÊTRE 2</div>
+<div class="el" style="left:32.30%;top:7.60%;width:3.20%;height:4.40%;"><svg viewBox="0 0 60 54" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><polygon points="30,2 58,52 2,52" fill="#D4452F"/><text x="30" y="46" text-anchor="middle" fill="#fff" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="14" letter-spacing="0.5">10 S</text></svg></div>
+<div class="el" style="left:32.30%;top:12.60%;width:3.20%;height:4.40%;"><svg viewBox="0 0 60 54" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><polygon points="30,2 58,52 2,52" fill="#D4452F"/><text x="30" y="46" text-anchor="middle" fill="#fff" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="14" letter-spacing="0.5">V.C.C</text></svg></div>
+<div class="el tag-gris" style="left:36.40%;top:10.17%;width:8.81%;height:2.60%;">FRITE</div>
+<div class="el tag-gris" style="left:45.59%;top:10.17%;width:8.81%;height:2.60%;">BERTHA</div>
+<div class="el tag-gris" style="left:55.20%;top:10.17%;width:5.20%;height:2.60%;">TIMER</div>
+<div class="el tag-gris" style="left:60.90%;top:10.17%;width:5.20%;height:2.60%;">FOURS</div>
+<div class="el tag-gris" style="left:66.26%;top:10.17%;width:10.18%;height:2.60%;">PRÉPARATION</div>
+<div class="el lbl-station" style="left:85.26%;top:12.77%;width:8.28%;height:1.95%;">FENÊTRE 1</div>
+<div class="el bar-dark" style="left:85.26%;top:6.11%;width:8.28%;height:2.16%;">OUVERTURE 7H</div>
+<div class="el lbl-station-2l" style="left:10.64%;top:29.00%;width:11.09%;height:4.11%;">BOISSONS ET<br>DESSERTS</div>
+<div class="el equip-3" style="left:8.51%;top:36.36%;width:15.35%;height:2.81%;"><span>SMOOTHIES</span><span>Mc CAFÉ</span><span>LAIT FRAPPÉ</span></div>
+<div class="el wall" style="left:4.71%;top:39.61%;width:27.05%;height:1.19%;"></div>
+<div class="el tag-rouge" style="left:5.17%;top:41.77%;width:2.43%;height:5.41%;">1</div>
+<div class="el lbl-station" style="left:8.36%;top:43.29%;width:12.92%;height:1.73%;">PRÉPOSÉ AUX ATTENTES</div>
+<div class="el tag-bleu" style="left:36.78%;top:29.22%;width:8.81%;height:1.95%;">BACKUP AVANT</div>
+<div class="el tag-bleu" style="left:46.97%;top:21.32%;width:8.81%;height:2.92%;">BACKUP DRIVE</div>
+<div class="el" style="left:42.20%;top:24.60%;width:3.20%;height:4.40%;"><svg viewBox="0 0 60 54" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><polygon points="30,2 58,52 2,52" fill="#D4452F"/><text x="30" y="46" text-anchor="middle" fill="#fff" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="14" letter-spacing="0.5">V.C.C</text></svg></div>
+<div class="el equip" style="left:45.59%;top:28.14%;width:11.55%;height:8.23%;"></div>
+<div class="el lbl-station" style="left:61.12%;top:30.95%;width:9.00%;height:1.95%;">UHC</div>
+<div class="el lbl-station" style="left:71.37%;top:30.95%;width:9.00%;height:1.95%;letter-spacing:.03em;">ACCÉLÉRATEUR</div>
+<div class="el lbl-station" style="left:80.87%;top:30.95%;width:9.00%;height:1.95%;letter-spacing:.03em;">INITIATEUR</div>
+<div class="el lbl-station" style="left:80.87%;top:33.10%;width:9.00%;height:1.55%;font-size:0.95cqw;letter-spacing:.05em;">CASQUE</div>
+<div class="el outline" style="left:57.60%;top:28.57%;width:31.00%;height:7.25%;"></div>
+<div class="el tag-accent" style="left:34.35%;top:48.27%;width:2.58%;height:2.81%;">M</div>
+<div class="el col-fond" style="left:45.44%;top:48.27%;width:4.71%;height:31.60%;"></div>
+<div class="el col-sect" style="left:45.44%;top:48.27%;width:4.71%;height:10.53%;">CAFÉ</div>
+<div class="el col-sect" style="left:45.44%;top:58.80%;width:4.71%;height:10.53%;">SPLASH<br>FRAÎCHEUR<br>CAFÉ GLACÉ</div>
+<div class="el col-sect" style="left:45.44%;top:69.34%;width:4.71%;height:10.53%;">JUS DE<br>POMME<br>JUS<br>D'ORANGE</div>
+<div class="el col-vert" style="left:27.05%;top:59.28%;width:4.56%;height:18.64%;">CAISSE</div>
+<div class="el col-fond col-sect" style="left:27.05%;top:50.65%;width:4.56%;height:8.00%;">VITRINE</div>
+<div class="el col-fond col-sect" style="left:27.05%;top:41.99%;width:4.56%;height:8.00%;">COMPTOIR<br>COMMANDE<br>MOBILE</div>
+<div class="el tag-gris" style="left:90.00%;top:22.10%;width:5.50%;height:2.60%;">WASH</div>
+<div class="el" style="left:90.75%;top:15.40%;width:4.00%;height:6.20%;"><svg viewBox="0 0 40 64" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><line x1="20" y1="2" x2="20" y2="46" stroke="#26221F" stroke-width="4"/><polygon points="11,44 29,44 20,62" fill="#26221F"/></svg></div>
+<div class="el pl-ecran" style="left:90.27%;top:29.90%;width:4.56%;height:4.55%;">ÉCRANS</div>
+<div class="el etoile" style="left:89.50%;top:35.61%;width:3.34%;height:4.76%;">☆</div>
+<div class="el outline" style="left:24.25%;top:20.50%;width:10.00%;height:6.20%;"></div>
+<div class="el lbl-station" style="left:24.50%;top:21.30%;width:9.50%;height:1.95%;letter-spacing:.02em;">GÉRANT DÉGAGÉ</div>
+<input type="text" class="case" data-id="gerant-degage" style="left:25.50%;top:23.60%;width:7.50%;height:2.71%;" title="Gérant dégagé" aria-label="Gérant dégagé" autocomplete="off">
+<div class="el" style="left:28.30%;top:17.90%;width:1.90%;height:2.30%;"><svg viewBox="0 0 40 40" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><polygon points="20,3 37,37 3,37" fill="#26221F"/></svg></div>
+<div class="el" style="left:28.30%;top:27.00%;width:1.90%;height:2.30%;"><svg viewBox="0 0 40 40" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><polygon points="20,37 3,3 37,3" fill="#26221F"/></svg></div>
+<div class="el" style="left:22.05%;top:22.45%;width:1.90%;height:2.30%;"><svg viewBox="0 0 40 40" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><polygon points="3,20 37,3 37,37" fill="#26221F"/></svg></div>
+<div class="el" style="left:34.57%;top:22.45%;width:1.90%;height:2.30%;"><svg viewBox="0 0 40 40" width="100%" height="100%" preserveAspectRatio="xMidYMid meet"><polygon points="37,20 3,3 3,37" fill="#26221F"/></svg></div>
+<div class="el tag-vert" style="left:55.93%;top:45.45%;width:4.56%;height:4.33%;">CUISEUR<br>À ŒUF</div>
+<div class="el lbl-station" style="left:62.16%;top:45.02%;width:5.62%;height:1.62%;">GRILL 1</div>
+<div class="el lbl-station" style="left:73.10%;top:45.02%;width:5.62%;height:1.62%;">GRILL 2</div>
+<div class="el lbl-station" style="left:84.35%;top:44.81%;width:9.27%;height:1.62%;">PRODUITS FRITS</div>
+<div class="el zone-cuisine" style="left:51.52%;top:50.00%;width:41.95%;height:8.66%;"></div>
+<div class="el equip" style="left:61.25%;top:50.65%;width:7.60%;height:7.14%;">Grill</div>
+<div class="el equip" style="left:72.19%;top:50.65%;width:7.60%;height:7.14%;">Grill</div>
+<div class="el equip" style="left:84.95%;top:50.65%;width:8.51%;height:7.14%;">Friteuses</div>
+<div class="el outline-lbl" style="left:6.53%;top:57.58%;width:17.17%;height:3.03%;">LEADER DE QUART</div>
+<div class="el outline-lbl" style="left:6.53%;top:71.00%;width:17.17%;height:3.03%;">L.E.C</div>
+<div class="el card-cibles" style="left:50.61%;top:58.44%;width:45.90%;height:21.65%;"></div>
+<div class="el bar-dark" style="left:51.37%;top:59.31%;width:44.38%;height:2.71%;">CIBLES</div>
+<div class="el bar-dark" style="left:51.37%;top:62.77%;width:44.38%;height:2.71%;">VENTES À SUGGESTION&nbsp;:</div>
+<div class="el cell-head" style="left:51.37%;top:72.19%;width:6.91%;height:3.79%;">FCFP</div>
+<div class="el cell-head" style="left:58.21%;top:72.19%;width:6.91%;height:3.79%;">RàP</div>
+<div class="el cell-head" style="left:65.05%;top:72.19%;width:6.91%;height:3.79%;">COA</div>
+<div class="el cell-head" style="left:71.88%;top:72.19%;width:8.43%;height:3.79%;">SERVICE<br>AUX TABLES</div>
+<div class="el bar-dark" style="left:3.04%;top:80.95%;width:28.88%;height:2.27%;">PRÉPOSÉ À LA SALLE À MANGER</div>
+<div class="el bar-rouge" style="left:32.29%;top:80.95%;width:34.95%;height:2.27%;">GÉRANT DE PRODUCTION</div>
+<div class="el bar-bleu" style="left:67.63%;top:80.95%;width:28.88%;height:2.27%;">GÉRANT DE SERVICE</div>
+<div class="el row-blanche" style="left:3.04%;top:83.33%;width:28.88%;height:5.41%;"></div>
+<div class="el row-blanche" style="left:32.29%;top:83.33%;width:34.95%;height:5.41%;"></div>
+<div class="el row-blanche" style="left:67.63%;top:83.33%;width:28.88%;height:5.41%;"></div>
+<div class="el bar-dark" style="left:3.04%;top:89.18%;width:19.76%;height:2.27%;">SPÉCIALISTE EN EXPÉRIENCE CLIENT</div>
+<div class="el bar-dark" style="left:22.95%;top:89.18%;width:8.97%;height:2.27%;">CIBLES</div>
+<div class="el bar-rouge" style="left:32.29%;top:89.18%;width:34.95%;height:2.27%;">AMBASSADEUR McLIVRAISON</div>
+<div class="el bar-violet" style="left:67.63%;top:89.18%;width:28.88%;height:2.27%;">FÊTES ENFANTS / AUTRE</div>
+<div class="el row-blanche" style="left:3.04%;top:91.56%;width:28.88%;height:4.76%;"></div>
+<div class="el row-blanche" style="left:32.29%;top:91.56%;width:34.95%;height:4.76%;"></div>
+<div class="el row-blanche" style="left:67.63%;top:91.56%;width:28.88%;height:4.76%;"></div>
+<input type="text" class="case" data-id="date" style="left:10.94%;top:1.30%;width:10.79%;height:4.22%;" title="Date" aria-label="Date" autocomplete="off">
+<input type="text" class="case" data-id="periode" style="left:41.41%;top:1.62%;width:19.38%;height:3.46%;" title="Période" aria-label="Période" autocomplete="off">
+<input type="text" class="case" data-id="frite-1" style="left:37.16%;top:13.10%;width:8.13%;height:2.92%;" title="Frite" aria-label="Frite" autocomplete="off">
+<input type="text" class="case" data-id="frite-2" style="left:46.50%;top:13.20%;width:7.98%;height:3.14%;" title="Frite" aria-label="Frite" autocomplete="off">
+<input type="text" class="case" data-id="prep-1" style="left:66.26%;top:13.10%;width:10.18%;height:2.81%;" title="Préparation" aria-label="Préparation" autocomplete="off">
+<input type="text" class="case" data-id="vert1-1" style="left:61.55%;top:24.46%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="vert1-2" style="left:71.81%;top:24.46%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="vert1-3" style="left:81.31%;top:24.46%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="boissons" style="left:11.78%;top:33.33%;width:8.81%;height:3.03%;" title="Boissons et desserts" aria-label="Boissons et desserts" autocomplete="off">
+<input type="text" class="case" data-id="vert2-1" style="left:61.55%;top:36.58%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="vert2-2" style="left:71.81%;top:36.58%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="vert2-3" style="left:81.31%;top:36.58%;width:8.13%;height:2.81%;" title="Production" aria-label="Production" autocomplete="off">
+<input type="text" class="case" data-id="comptoir-mcd" style="left:37.69%;top:48.38%;width:6.91%;height:2.71%;" title="Commandes mobiles" aria-label="Commandes mobiles" autocomplete="off">
+<input type="text" class="case" data-id="grill1" style="left:60.79%;top:46.97%;width:8.05%;height:2.81%;" title="Grill 1" aria-label="Grill 1" autocomplete="off">
+<input type="text" class="case" data-id="grill2" style="left:71.81%;top:46.97%;width:8.05%;height:2.92%;" title="Grill 2" aria-label="Grill 2" autocomplete="off">
+<input type="text" class="case" data-id="pfrits" style="left:84.88%;top:46.75%;width:8.36%;height:3.03%;" title="Produits frits" aria-label="Produits frits" autocomplete="off">
+<input type="text" class="case" data-id="leader-1" style="left:9.88%;top:61.26%;width:10.26%;height:3.57%;" title="Leader de quart" aria-label="Leader de quart" autocomplete="off">
+<input type="text" class="case" data-id="lec" style="left:9.88%;top:74.68%;width:10.26%;height:3.57%;" title="L.E.C" aria-label="L.E.C" autocomplete="off">
+<input type="text" class="case" data-id="bleu-1" style="left:31.91%;top:65.26%;width:7.90%;height:2.60%;" title="Poste" aria-label="Poste" autocomplete="off">
+<input type="text" class="case" data-id="bleu-2" style="left:31.91%;top:69.81%;width:7.98%;height:2.60%;" title="Poste" aria-label="Poste" autocomplete="off">
+<input type="text" class="case" data-id="caisse-mclivraison" style="left:40.31%;top:67.54%;width:4.71%;height:2.60%;" title="Poste" aria-label="Poste" autocomplete="off">
+<input type="text" class="case" data-id="suggestion" style="left:51.67%;top:68.07%;width:44.68%;height:3.25%;" title="Ventes à suggestion" aria-label="Ventes à suggestion" autocomplete="off">
+<input type="text" class="case" data-id="fcfp" style="left:51.37%;top:75.87%;width:6.91%;height:3.79%;" title="FCFP" aria-label="FCFP" autocomplete="off">
+<input type="text" class="case" data-id="rap" style="left:58.21%;top:75.97%;width:6.91%;height:3.68%;" title="RàP" aria-label="RàP" autocomplete="off">
+<input type="text" class="case" data-id="coa" style="left:65.05%;top:75.97%;width:6.84%;height:3.68%;" title="COA" aria-label="COA" autocomplete="off">
+<input type="text" class="case" data-id="sat" style="left:71.88%;top:75.97%;width:8.36%;height:3.68%;" title="Service aux tables" aria-label="Service aux tables" autocomplete="off">
+<input type="text" class="case" data-id="salle" style="left:3.80%;top:84.41%;width:27.36%;height:3.25%;" title="Préposé à la salle à manger" aria-label="Préposé à la salle à manger" autocomplete="off">
+<input type="text" class="case" data-id="gservice" style="left:68.39%;top:84.41%;width:27.36%;height:3.25%;" title="Gérant de service" aria-label="Gérant de service" autocomplete="off">
+<input type="text" class="case" data-id="experience" style="left:3.80%;top:92.32%;width:18.24%;height:3.25%;" title="Spécialiste expérience client" aria-label="Spécialiste expérience client" autocomplete="off">
+<input type="text" class="case" data-id="cibles-bas" style="left:23.71%;top:92.32%;width:7.45%;height:3.25%;" title="Cibles" aria-label="Cibles" autocomplete="off">
+<input type="text" class="case" data-id="ambassadeur" style="left:33.05%;top:92.32%;width:33.43%;height:3.25%;" title="Ambassadeur McLivraison" aria-label="Ambassadeur McLivraison" autocomplete="off">
+<input type="text" class="case" data-id="fetes" style="left:68.39%;top:92.32%;width:27.36%;height:3.25%;" title="Fêtes enfants / autre" aria-label="Fêtes enfants / autre" autocomplete="off">
+<input type="text" class="case" data-id="fenetre2" style="left:23.18%;top:8.66%;width:8.28%;height:3.35%;" title="Fenêtre 2" aria-label="Fenêtre 2" autocomplete="off">
+<input type="text" class="case" data-id="fenetre1" style="left:85.26%;top:8.44%;width:8.28%;height:3.35%;" title="Fenêtre 1" aria-label="Fenêtre 1" autocomplete="off">
+<input type="text" class="case" data-id="ligne2" style="left:5.62%;top:14.83%;width:8.28%;height:3.57%;" title="Ligne 2" aria-label="Ligne 2" autocomplete="off">
+<input type="text" class="case" data-id="ligne1" style="left:14.44%;top:14.83%;width:8.28%;height:3.57%;" title="Ligne 1" aria-label="Ligne 1" autocomplete="off">
+<input type="text" class="case" data-id="backup-avant-1" style="left:37.23%;top:31.17%;width:7.90%;height:2.60%;" title="Backup avant" aria-label="Backup avant" autocomplete="off">
+<input type="text" class="case" data-id="backup-avant-2" style="left:37.16%;top:34.52%;width:8.05%;height:3.03%;" title="Backup avant" aria-label="Backup avant" autocomplete="off">
+<input type="text" class="case" data-id="backup-avant-3" style="left:37.16%;top:37.99%;width:8.05%;height:3.03%;" title="Backup avant" aria-label="Backup avant" autocomplete="off">
+<input type="text" class="case" data-id="backup-drive" style="left:46.05%;top:24.24%;width:10.64%;height:2.92%;" title="Backup drive" aria-label="Backup drive" autocomplete="off">
+<input type="text" class="case" data-id="attentes-1" style="left:8.21%;top:45.24%;width:15.35%;height:2.81%;" title="Préposé aux attentes" aria-label="Préposé aux attentes" autocomplete="off">
+<input type="text" class="case" data-id="attentes-2" style="left:8.21%;top:48.92%;width:15.35%;height:2.81%;" title="Préposé aux attentes" aria-label="Préposé aux attentes" autocomplete="off">
+<input type="text" class="case" data-id="gprod" style="left:33.05%;top:84.41%;width:33.43%;height:3.25%;" title="Gérant de production" aria-label="Gérant de production" autocomplete="off">
+    </div>
+    <div class="liseret bas"></div>
+  </div>
+  </div>
+
+  <div id="vue-plan" style="display:none">
+    <p class="aide" style="margin-top:0">Même logique que le tableau : touche un prénom de la liste puis une case Prénom. Les prénoms sont synchronisés avec le tableau dans les deux sens. Les tâches se choisissent dans la liste ou s'écrivent librement.</p>
+    <div class="zone">
+      <span class="zone-titre">Service</span>
+      <div class="cartes">
+      <div class="carte" data-ref="fenetre2">
+        <div class="carte-titre">Fenêtre 2</div>
+        <input type="text" class="miroir" data-ref="fenetre2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:fenetre2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:fenetre2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:fenetre2" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="ligne2">
+        <div class="carte-titre">Ligne 2</div>
+        <input type="text" class="miroir" data-ref="ligne2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:ligne2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:ligne2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:ligne2" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="ligne1">
+        <div class="carte-titre">Ligne 1</div>
+        <input type="text" class="miroir" data-ref="ligne1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:ligne1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:ligne1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:ligne1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="fenetre1">
+        <div class="carte-titre">Fenêtre 1 — Ouverture 7h</div>
+        <input type="text" class="miroir" data-ref="fenetre1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:fenetre1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:fenetre1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:fenetre1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="backup-avant-1">
+        <div class="carte-titre">Backup avant 1</div>
+        <input type="text" class="miroir" data-ref="backup-avant-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:backup-avant-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:backup-avant-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:backup-avant-1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="backup-avant-2">
+        <div class="carte-titre">Backup avant 2</div>
+        <input type="text" class="miroir" data-ref="backup-avant-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:backup-avant-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:backup-avant-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:backup-avant-2" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="backup-avant-3">
+        <div class="carte-titre">Backup avant 3</div>
+        <input type="text" class="miroir" data-ref="backup-avant-3" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:backup-avant-3" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:backup-avant-3" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:backup-avant-3" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="backup-drive">
+        <div class="carte-titre">Backup drive</div>
+        <input type="text" class="miroir" data-ref="backup-drive" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:backup-drive" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:backup-drive" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:backup-drive" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="comptoir-mcd">
+        <div class="carte-titre">Commandes mobiles</div>
+        <input type="text" class="miroir" data-ref="comptoir-mcd" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:comptoir-mcd" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:comptoir-mcd" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:comptoir-mcd" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="bleu-1">
+        <div class="carte-titre">Caisse 1</div>
+        <input type="text" class="miroir" data-ref="bleu-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:bleu-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:bleu-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:bleu-1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="bleu-2">
+        <div class="carte-titre">Caisse 2</div>
+        <input type="text" class="miroir" data-ref="bleu-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:bleu-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:bleu-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:bleu-2" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="caisse-mclivraison">
+        <div class="carte-titre">Caisse — appui</div>
+        <input type="text" class="miroir" data-ref="caisse-mclivraison" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:caisse-mclivraison" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:caisse-mclivraison" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:caisse-mclivraison" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="boissons">
+        <div class="carte-titre">Boissons et desserts</div>
+        <input type="text" class="miroir" data-ref="boissons" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:boissons" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:boissons" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:boissons" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="attentes-1">
+        <div class="carte-titre">Préposé aux attentes 1</div>
+        <input type="text" class="miroir" data-ref="attentes-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:attentes-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:attentes-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:attentes-1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="attentes-2">
+        <div class="carte-titre">Préposé aux attentes 2</div>
+        <input type="text" class="miroir" data-ref="attentes-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:attentes-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:attentes-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:attentes-2" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="salle">
+        <div class="carte-titre">Préposé à la salle à manger</div>
+        <input type="text" class="miroir" data-ref="salle" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:salle" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:salle" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:salle" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="leader-1">
+        <div class="carte-titre">Leader de quart</div>
+        <input type="text" class="miroir" data-ref="leader-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:leader-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:leader-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:leader-1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="lec">
+        <div class="carte-titre">L.E.C</div>
+        <input type="text" class="miroir" data-ref="lec" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:lec" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:lec" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:lec" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      </div>
+    </div>
+    <div class="zone">
+      <span class="zone-titre">Cuisine</span>
+      <div class="cartes">
+      <div class="carte" data-ref="frite-1">
+        <div class="carte-titre">Frite</div>
+        <input type="text" class="miroir" data-ref="frite-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:frite-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:frite-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:frite-1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="frite-2">
+        <div class="carte-titre">Bertha</div>
+        <input type="text" class="miroir" data-ref="frite-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:frite-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:frite-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:frite-2" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="prep-1">
+        <div class="carte-titre">Préparation</div>
+        <input type="text" class="miroir" data-ref="prep-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:prep-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:prep-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:prep-1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="vert1-1">
+        <div class="carte-titre">UHC — 2ème bord</div>
+        <input type="text" class="miroir" data-ref="vert1-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:vert1-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:vert1-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:vert1-1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="vert1-2">
+        <div class="carte-titre">Gérant de production — 2ème bord</div>
+        <input type="text" class="miroir" data-ref="vert1-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:vert1-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:vert1-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:vert1-2" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="vert1-3">
+        <div class="carte-titre">Initiateur — 2ème bord</div>
+        <input type="text" class="miroir" data-ref="vert1-3" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:vert1-3" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:vert1-3" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:vert1-3" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="vert2-1">
+        <div class="carte-titre">UHC — 1er bord</div>
+        <input type="text" class="miroir" data-ref="vert2-1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:vert2-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:vert2-1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:vert2-1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="vert2-2">
+        <div class="carte-titre">Gérant de production — 1er bord</div>
+        <input type="text" class="miroir" data-ref="vert2-2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:vert2-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:vert2-2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:vert2-2" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="vert2-3">
+        <div class="carte-titre">Initiateur — 1er bord</div>
+        <input type="text" class="miroir" data-ref="vert2-3" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:vert2-3" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:vert2-3" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:vert2-3" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="grill1">
+        <div class="carte-titre">Grill 1</div>
+        <input type="text" class="miroir" data-ref="grill1" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:grill1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:grill1" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:grill1" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="grill2">
+        <div class="carte-titre">Grill 2</div>
+        <input type="text" class="miroir" data-ref="grill2" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:grill2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:grill2" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:grill2" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      <div class="carte" data-ref="pfrits">
+        <div class="carte-titre">Produits frits</div>
+        <input type="text" class="miroir" data-ref="pfrits" placeholder="Prénom" autocomplete="off">
+        <span class="lib">Tâche primaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t1:pfrits" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Tâche secondaire</span>
+        <div class="field"><textarea class="extra auto" data-id="t2:pfrits" data-suggest="tasks" rows="1" autocomplete="off"></textarea></div>
+        <span class="lib">Objectif</span>
+        <div class="field"><textarea class="extra auto" data-id="obj:pfrits" data-suggest="obj" rows="1" autocomplete="off"></textarea></div>
+      </div>
+      </div>
+    </div>
+    <div class="zone">
+      <span class="zone-titre">Encadrement</span>
+      <div class="cartes">
+      <div class="carte" data-ref="gprod">
+        <div class="carte-titre">Gérant de production</div>
+        <input type="text" class="miroir" data-ref="gprod" placeholder="Prénom" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="gservice">
+        <div class="carte-titre">Gérant de service</div>
+        <input type="text" class="miroir" data-ref="gservice" placeholder="Prénom" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="experience">
+        <div class="carte-titre">Spécialiste expérience client</div>
+        <input type="text" class="miroir" data-ref="experience" placeholder="Prénom" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="ambassadeur">
+        <div class="carte-titre">Ambassadeur McLivraison</div>
+        <input type="text" class="miroir" data-ref="ambassadeur" placeholder="Prénom" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="fetes">
+        <div class="carte-titre">Fêtes enfants / autre</div>
+        <input type="text" class="miroir" data-ref="fetes" placeholder="Prénom" autocomplete="off">
+      </div>
+      </div>
+    </div>
+    <div class="zone">
+      <span class="zone-titre">Cibles du quart</span>
+      <div class="cartes">
+      <div class="carte" data-ref="suggestion">
+        <div class="carte-titre">Ventes à suggestion</div>
+        <input type="text" class="miroir" data-ref="suggestion" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="fcfp">
+        <div class="carte-titre">FCFP</div>
+        <input type="text" class="miroir" data-ref="fcfp" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="rap">
+        <div class="carte-titre">RàP</div>
+        <input type="text" class="miroir" data-ref="rap" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="coa">
+        <div class="carte-titre">COA</div>
+        <input type="text" class="miroir" data-ref="coa" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="sat">
+        <div class="carte-titre">Service aux tables</div>
+        <input type="text" class="miroir" data-ref="sat" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      <div class="carte" data-ref="cibles-bas">
+        <div class="carte-titre">Cibles — bandeau</div>
+        <input type="text" class="miroir" data-ref="cibles-bas" placeholder="Valeur / cible" autocomplete="off">
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button class="principal" id="btn-sauver">Sauvegarder ce plan</button>
+    <button id="btn-charger">Recharger</button>
+    <button id="btn-vider">Effacer le tableau</button>
+    <button id="btn-imprimer">Imprimer</button>
+    <button id="btn-courriel">Envoyer par courriel</button>
+    <span class="statut" id="statut"></span>
+  </div>
+  <footer class="copyright">© 2026 Romuald Luce — Outil créé pour McDonald's St-Jovite #22028. Reproduction, diffusion ou réutilisation interdite sans autorisation écrite de l'auteur. Les marques et normes d'exploitation McDonald's demeurent la propriété de McDonald's Corporation.</footer>
+</div>
+
+
+    </section>
+
+<script>
+  function sha256(ascii) {
+    const K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
+      0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+      0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
+      0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+      0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
+      0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+      0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
+      0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    let H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+    function rotr(x,n){ return (x>>>n)|(x<<(32-n)); }
+    const bytes = [];
+    for (let i=0;i<ascii.length;i++){ bytes.push(ascii.charCodeAt(i)&0xff); }
+    const l = bytes.length;
+    bytes.push(0x80);
+    while (bytes.length % 64 !== 56) bytes.push(0);
+    const bitLen = l*8;
+    bytes.push(0,0,0,0,(bitLen>>>24)&0xff,(bitLen>>>16)&0xff,(bitLen>>>8)&0xff,bitLen&0xff);
+    for (let off=0; off<bytes.length; off+=64){
+      const w = new Array(64);
+      for (let i=0;i<16;i++){ w[i]=(bytes[off+i*4]<<24)|(bytes[off+i*4+1]<<16)|(bytes[off+i*4+2]<<8)|(bytes[off+i*4+3]); }
+      for (let i=16;i<64;i++){
+        const s0 = rotr(w[i-15],7)^rotr(w[i-15],18)^(w[i-15]>>>3);
+        const s1 = rotr(w[i-2],17)^rotr(w[i-2],19)^(w[i-2]>>>10);
+        w[i]=(w[i-16]+s0+w[i-7]+s1)|0;
+      }
+      let a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
+      for (let i=0;i<64;i++){
+        const S1=rotr(e,6)^rotr(e,11)^rotr(e,25);
+        const ch=(e&f)^((~e)&g);
+        const t1=(h+S1+ch+K[i]+w[i])|0;
+        const S0=rotr(a,2)^rotr(a,13)^rotr(a,22);
+        const maj=(a&b)^(a&c)^(b&c);
+        const t2=(S0+maj)|0;
+        h=g; g=f; f=e; e=(d+t1)|0; d=c; c=b; b=a; a=(t1+t2)|0;
+      }
+      H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;
+      H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0;
+    }
+    return H.map(x => (x>>>0).toString(16).padStart(8,'0')).join('');
+  }
+
+
+  const HASHES = {"f6d13c6aa7ccf153676a6c166488ad0b4e5cf76559a326361cd11490f3a3c94c": "Romuald Luce", "c23b074d11ce0b331f5a59b665007073d4120122813eebb85fc3f2e02b046bb8": "Valérie Raymond", "0ee6b6a8b9e662140ae719ace0231f7779f40fa6c215a5abfe561434d0f2c2a8": "Zahira Anouar", "982873e0d42d7e8b4cc897710dddee4b14088c7bd6489a2f6108753c1ee82932": "Achraf Saktiwy", "2faddf834933215ff8a89b328f2264ada108cfd1257cd7c62e6722bcf29b8d15": "Abderrazzak Lachhab", "bc82402eaeb6a6547a94b87242c03a1c94725324229c8e39be7bb4058811878e": "Jimmy Lapointe", "d58017f55251bba3d2bcfa9be110d99c25aaabfedcfc8b3a9919a05f12815efb": "Mustapha El Ouagari", "083187ba4931358699b3dbe8eb8bb95de192583edbd6659c3ec5c71b91db5adb": "Marie-Josée Duplessis"};
+  const PROPRIETAIRE = "Romuald Luce";
+  let leaderActuel = null;
+
+  const elCode = document.getElementById('ecran-code');
+  const elMenu = document.getElementById('menu');
+  const vues = Array.from(document.querySelectorAll('.vue'));
+  const tousEcrans = [elCode, elMenu, ...vues, document.getElementById('vue-repartition')];
+
+  function montrer(el){
+    tousEcrans.forEach(x => x.classList.add('cache'));
+    el.classList.remove('cache');
+    window.scrollTo(0,0);
+  }
+
+  // --- Connexion ---
+  const input = document.getElementById('code');
+  const err = document.getElementById('err');
+  function tenter(){
+    const code = (input.value || '').trim().toUpperCase();
+    if(!code){ return; }
+    const h = sha256(code);
+    if(HASHES[h]){
+      leaderActuel = HASHES[h];
+      document.getElementById('qui').textContent = leaderActuel;
+      // pré-remplir le leader sur les fiches non encore attribuées (on n'écrase pas une fiche restaurée)
+      document.querySelectorAll('.sel-leader').forEach(sel => {
+        if(sel.value) return;
+        for(const o of sel.options){ if(o.value === leaderActuel || o.text === leaderActuel){ o.selected = true; break; } }
+      });
+      input.value = ''; err.textContent = '';
+      montrer(elMenu);
+    } else {
+      err.textContent = "Code non reconnu.";
+      input.select();
+    }
+  }
+  document.getElementById('btn-entrer').addEventListener('click', tenter);
+  input.addEventListener('keydown', e => { if(e.key === 'Enter') tenter(); });
+
+  // --- Navigation ---
+  document.querySelectorAll('.tuile[data-vue]').forEach(b => {
+    b.addEventListener('click', () => montrer(document.getElementById('vue-' + b.dataset.vue)));
+  });
+  function retourMenu(){ montrer(elMenu); }
+  function verrouiller(){ leaderActuel = null; document.getElementById('qui').textContent = '—'; montrer(elCode); input.focus(); }
+
+  // --- Persistance locale (sauvegarde sur l'appareil — iPad / Safari) ---
+  function cleVue(v){ return 'prequart_22028_' + v.id; }
+  function sauverVue(v){
+    try{
+      const data = {
+        date: (v.querySelector('.in-date')||{}).value || '',
+        leader: (v.querySelector('.sel-leader')||{}).value || '',
+        periode: (v.querySelector('.sel-periode')||{}).value || '',
+        cases: Array.from(v.querySelectorAll('.ck')).map(c=>c.checked),
+        matrice: Array.from(v.querySelectorAll('td[contenteditable]')).map(t=>t.textContent)
+      };
+      localStorage.setItem(cleVue(v), JSON.stringify(data));
+    }catch(e){}
+  }
+  function restaurerVue(v){
+    try{
+      const raw = localStorage.getItem(cleVue(v));
+      if(!raw) return;
+      const data = JSON.parse(raw);
+      const inD = v.querySelector('.in-date'); if(inD && data.date!=null) inD.value = data.date;
+      if(data.periode){ const s=v.querySelector('.sel-periode'); if(s){ for(const o of s.options){ if(o.value===data.periode){o.selected=true;break;} } } }
+      if(data.leader){ const s=v.querySelector('.sel-leader'); if(s){ for(const o of s.options){ if(o.value===data.leader||o.text===data.leader){o.selected=true;break;} } } }
+      const ck = Array.from(v.querySelectorAll('.ck'));
+      if(Array.isArray(data.cases)) data.cases.forEach((val,i)=>{ if(ck[i]) ck[i].checked=!!val; });
+      const tds = Array.from(v.querySelectorAll('td[contenteditable]'));
+      if(Array.isArray(data.matrice)) data.matrice.forEach((val,i)=>{ if(tds[i]) tds[i].textContent=(val==null?'':val); });
+    }catch(e){}
+  }
+  function effacerVue(v){ try{ localStorage.removeItem(cleVue(v)); }catch(e){} }
+  vues.forEach(restaurerVue);
+
+  // --- Logique par fiche (compteur, date, reset, sauvegarde) ---
+  vues.forEach(v => {
+    const cases = Array.from(v.querySelectorAll('.ck'));
+    const cpt = v.querySelector('.compteur');
+    const maj = () => { cpt.textContent = cases.filter(c=>c.checked).length + ' / ' + cases.length + ' fait'; };
+    cases.forEach(c => c.addEventListener('change', () => { maj(); sauverVue(v); }));
+    maj();
+    v.querySelector('.btn-date').addEventListener('click', () => {
+      const d = new Date();
+      v.querySelector('.in-date').value = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,'0')+"-"+String(d.getDate()).padStart(2,'0');
+      sauverVue(v);
+    });
+    const inDate = v.querySelector('.in-date'); if(inDate) inDate.addEventListener('change', () => sauverVue(v));
+    const selPer = v.querySelector('.sel-periode'); if(selPer) selPer.addEventListener('change', () => sauverVue(v));
+    const selLea = v.querySelector('.sel-leader'); if(selLea) selLea.addEventListener('change', () => sauverVue(v));
+    v.querySelectorAll('td[contenteditable]').forEach(td => td.addEventListener('input', () => sauverVue(v)));
+    v.querySelector('.btn-reset').addEventListener('click', () => {
+      if(!confirm("Vider cette fiche ?")) return;
+      cases.forEach(c => c.checked = false);
+      v.querySelector('.in-date').value = "";
+      v.querySelector('.sel-periode').selectedIndex = 0;
+      v.querySelectorAll('td[contenteditable]').forEach(t => t.textContent = "");
+      // le leader reste celui de la session
+      const sel = v.querySelector('.sel-leader');
+      if(leaderActuel){ for(const o of sel.options){ if(o.text === leaderActuel){ o.selected = true; break; } } }
+      else { sel.selectedIndex = 0; }
+      maj();
+      effacerVue(v);
+    });
+  });
+
+  // --- Récap texte (pour courriel / copie dans un groupe) ---
+  function genererRecap(v){
+    const titre = (v.querySelector('.titre h1')?.textContent || '').trim();
+    const date = (v.querySelector('.in-date')?.value || '').trim();
+    const leader = (v.querySelector('.sel-leader')?.value || '').trim();
+    const periode = (v.querySelector('.sel-periode')?.value || '').trim();
+    const ck = Array.from(v.querySelectorAll('.ck'));
+    const faits = ck.filter(c=>c.checked).length;
+    const L = [];
+    L.push(titre.toUpperCase());
+    L.push("McDonald's St-Jovite #22028");
+    let l2 = "Date : " + (date||"—");
+    if(leader) l2 += "   Leader : " + leader;
+    if(periode) l2 += "   Période : " + periode;
+    L.push(l2);
+    L.push("Progression : " + faits + "/" + ck.length + " fait");
+    v.querySelectorAll('.bloc').forEach(b=>{
+      const bt = (b.querySelector('.bloc-titre span')?.textContent || '').trim();
+      L.push(""); L.push(bt.toUpperCase());
+      b.querySelectorAll('.ligne').forEach(li=>{
+        const txt = (li.querySelector('.txt')?.textContent || '').replace(/\s+/g,' ').trim();
+        const c = li.querySelector('.ck');
+        L.push((c && c.checked ? "[x] " : "[ ] ") + txt);
+      });
+    });
+    const mx = v.querySelector('.matrice');
+    if(mx){
+      const ths = Array.from(mx.querySelectorAll('th')).map(t=>t.textContent.trim());
+      const cells = Array.from(mx.querySelectorAll('td'));
+      if(cells.some(c=>c.textContent.trim())){
+        L.push(""); L.push("MATRICE DE PRIORITÉ");
+        const n = ths.length;
+        ths.forEach((th,ci)=>{
+          const vals = [];
+          for(let i=ci;i<cells.length;i+=n){ const tx=cells[i].textContent.trim(); if(tx) vals.push(tx); }
+          if(vals.length) L.push(th + " : " + vals.join(" · "));
+        });
+      }
+    }
+    L.push(""); L.push("— Outil créé par Romuald Luce · St-Jovite #22028");
+    return L.join("\n");
+  }
+  function feedbackBtn(btn, msg){
+    const old = btn.textContent; btn.textContent = msg; btn.disabled = true;
+    setTimeout(()=>{ btn.textContent = old; btn.disabled = false; }, 1600);
+  }
+  vues.forEach(v => {
+    const bMail = v.querySelector('.btn-mail');
+    if(bMail) bMail.addEventListener('click', ()=>{
+      const txt = genererRecap(v);
+      const titre = (v.querySelector('.titre h1')?.textContent || '').trim();
+      const date = (v.querySelector('.in-date')?.value || '').trim();
+      const sujet = titre + (date ? " — " + date : "");
+      location.href = "mailto:?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(txt);
+    });
+    const bCopier = v.querySelector('.btn-copier');
+    if(bCopier) bCopier.addEventListener('click', async ()=>{
+      const txt = genererRecap(v);
+      try{
+        await navigator.clipboard.writeText(txt);
+        feedbackBtn(bCopier, "Copié !");
+      }catch(e){
+        const ta = document.createElement('textarea');
+        ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0';
+        document.body.appendChild(ta); ta.focus(); ta.select();
+        let ok=false; try{ ok = document.execCommand('copy'); }catch(_){}
+        document.body.removeChild(ta);
+        feedbackBtn(bCopier, ok ? "Copié !" : "Copie impossible");
+      }
+    });
+  });
+
+  // démarrage
+  montrer(elCode);
+  input.focus();
+</script>
+<script>
+/* ===== Logique du Plan de répartition — isolée ===== */
+(function(){
+const ROSTER_DEFAUT = ["Abdel Mounime","Abderrahman","Abderrazzak","Achraf","Aissa","Alessandro","Aube","Ayoub","Bader","Benjamin","Benoit","Charles","Charles-\u00c9mile","Christian","Damien","Denis","Emil","Emmy","\u00c9ric","Fatima","Hamza B.","Hamza N.","Irhisnat","Issa","Jimmy","Koffi","Lo\u00efc","Louka","Malick","Marie-Jos\u00e9e","Marie-Pier","Maxime","Michael","Mustapha","Naomie","Noah","Patrick","Rania","Raymond","Romalie","Romuald","Samuel","Simon","Th\u00e9o L.","Th\u00e9o R.","Thomas","Val\u00e9rie","William","Winie","Xavier","Yassmine","Zachary","Zahira","Zakaria"];
+let roster = [];
+let nomChoisi = null;
+let memoire = {};
+
+async function stGet(k){
+  try{ const r = await window.storage.get(k); return r ? r.value : null; }
+  catch(e){ try{ return localStorage.getItem(k); }catch(_){ return memoire[k] ?? null; } }
+}
+async function stSet(k,v){
+  try{ await window.storage.set(k,v); }
+  catch(e){ try{ localStorage.setItem(k,v); }catch(_){ memoire[k]=v; } }
+}
+
+const cases = [...document.querySelectorAll(".case")];
+
+cases.forEach(c=>{
+  c.addEventListener("input", ()=>{ majJetons(); });
+  c.addEventListener("pointerdown", (e)=>{
+    if(nomChoisi && !c.value.trim()){
+      e.preventDefault();
+      c.value = nomChoisi;
+      nomChoisi = null;
+      majJetons();
+    }
+  });
+});
+
+function nomsPlaces(){
+  return new Set(cases.map(c=>c.value.trim().toLowerCase()).filter(Boolean));
+}
+
+function majJetons(){
+  const cont = document.getElementById("jetons");
+  cont.innerHTML = "";
+  const places = nomsPlaces();
+  for(const nom of roster){
+    const j = document.createElement("span");
+    j.className = "jeton";
+    if(places.has(nom.toLowerCase())) j.classList.add("place");
+    if(nomChoisi===nom) j.classList.add("choisi");
+    j.textContent = nom + " ";
+    const x = document.createElement("span");
+    x.className = "x"; x.textContent = "✕"; x.title = "Retirer de la liste";
+    x.addEventListener("click",(e)=>{
+      e.stopPropagation();
+      roster = roster.filter(n=>n!==nom);
+      if(nomChoisi===nom) nomChoisi=null;
+      sauverRoster(); majJetons();
+    });
+    j.appendChild(x);
+    j.addEventListener("click", ()=>{ nomChoisi = (nomChoisi===nom)?null:nom; majJetons(); });
+    cont.appendChild(j);
+  }
+  if(roster.length===0){
+    cont.innerHTML = '<span class="aide">Aucun prénom enregistré. Ajoute ton équipe — la liste est conservée d\'un quart à l\'autre.</span>';
+  }
+  cases.forEach(c=>c.classList.toggle("cible-assignation", !!nomChoisi && !c.value.trim()));
+}
+async function sauverRoster(){ await stSet("stjovite-plan-roster", JSON.stringify(roster)); }
+
+document.getElementById("btn-ajouter").addEventListener("click", ajouterNom);
+document.getElementById("nouveau-nom").addEventListener("keydown", e=>{ if(e.key==="Enter") ajouterNom(); });
+function ajouterNom(){
+  const inp = document.getElementById("nouveau-nom");
+  const nom = inp.value.trim();
+  if(!nom) return;
+  if(!roster.some(n=>n.toLowerCase()===nom.toLowerCase())){
+    roster.push(nom); roster.sort((a,b)=>a.localeCompare(b,"fr"));
+    sauverRoster();
+  }
+  inp.value=""; majJetons(); inp.focus();
+}
+
+function valeurCase(id){
+  const c = cases.find(x=>x.dataset.id===id);
+  return c ? c.value.trim() : "";
+}
+function clePlan(){
+  const d = valeurCase("date") || "sans-date";
+  const p = valeurCase("periode") || "sans-periode";
+  return "stjovite-tableau:" + d.toLowerCase() + ":" + p.toLowerCase();
+}
+function etat(){
+  const o = {};
+  cases.forEach(c=>{ if(c.value.trim()) o[c.dataset.id]=c.value.trim(); });
+  extras.forEach(x=>{ if(x.value.trim()) o[x.dataset.id]=x.value.trim(); });
+  return o;
+}
+function appliquer(o){
+  cases.forEach(c=>{
+    if(c.dataset.id==="date"||c.dataset.id==="periode") return;
+    c.value = (o && o[c.dataset.id]) || "";
+  });
+  extras.forEach(x=>{ x.value = (o && o[x.dataset.id]) || ""; });
+  autosizeAll();
+  majJetons();
+}
+function statut(msg){
+  const s = document.getElementById("statut");
+  s.textContent = msg;
+  clearTimeout(statut.t);
+  statut.t = setTimeout(()=>{ s.textContent=""; }, 4500);
+}
+
+document.getElementById("btn-sauver").addEventListener("click", async ()=>{
+  if(!valeurCase("date")){ statut("Écris d'abord la date dans la case Date du tableau."); return; }
+  await stSet(clePlan(), JSON.stringify(etat()));
+  await stSet("stjovite-tableau:dernier", clePlan());
+  statut("Plan sauvegardé pour " + valeurCase("date") + (valeurCase("periode") ? " — " + valeurCase("periode") : "") + ".");
+});
+document.getElementById("btn-charger").addEventListener("click", async ()=>{
+  const brut = await stGet(clePlan());
+  if(brut){ try{ appliquer(JSON.parse(brut)); statut("Plan rechargé."); }catch(e){ statut("Plan illisible."); } }
+  else statut("Aucun plan enregistré pour cette date et cette période.");
+});
+document.getElementById("btn-vider").addEventListener("click", ()=>{
+  appliquer(null);
+  statut("Tableau effacé. Sauvegarde si tu veux conserver une version.");
+});
+document.getElementById("btn-imprimer").addEventListener("click", ()=>window.print());
+
+const miroirs = [...document.querySelectorAll(".miroir")];
+const extras  = [...document.querySelectorAll(".extra")];
+
+function syncMiroirs(){
+  miroirs.forEach(m=>{
+    const c = cases.find(x=>x.dataset.id===m.dataset.ref);
+    if(c && m.value!==c.value) m.value = c.value;
+  });
+}
+const _majJetons = majJetons;
+majJetons = function(){ _majJetons(); syncMiroirs();
+  miroirs.forEach(m=>m.classList.toggle("cible-assignation", !!nomChoisi && !m.value.trim()));
+};
+
+miroirs.forEach(m=>{
+  m.addEventListener("input", ()=>{
+    const c = cases.find(x=>x.dataset.id===m.dataset.ref);
+    if(c){ c.value = m.value; }
+    majJetons();
+  });
+  m.addEventListener("pointerdown",(e)=>{
+    if(nomChoisi && !m.value.trim()){
+      e.preventDefault();
+      m.value = nomChoisi;
+      const c = cases.find(x=>x.dataset.id===m.dataset.ref);
+      if(c) c.value = nomChoisi;
+      nomChoisi = null;
+      majJetons();
+    }
+  });
+});
+
+document.querySelectorAll(".onglet").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    document.querySelectorAll(".onglet").forEach(x=>x.classList.toggle("actif", x===b));
+    document.getElementById("vue-tableau").style.display = b.dataset.vue==="vue-tableau" ? "" : "none";
+    document.getElementById("vue-plan").style.display    = b.dataset.vue==="vue-plan"    ? "" : "none";
+  });
+});
+
+document.getElementById("btn-courriel").addEventListener("click", ()=>{
+  const d = valeurCase("date"), p = valeurCase("periode");
+  const lignes = [];
+  lignes.push("PLAN DE POSITIONNEMENT — McDonald's St-Jovite #22028");
+  lignes.push("Date : " + (d||"—") + (p ? "   Période : " + p : ""));
+  document.querySelectorAll("#vue-plan .zone").forEach(z=>{
+    const items = [];
+    z.querySelectorAll(".carte").forEach(c=>{
+      const ref = c.dataset.ref;
+      const get = sel => { const e=c.querySelector(sel); return e ? e.value.trim() : ""; };
+      const nom = get(".miroir"),
+            ta  = get('[data-id="t1:'+ref+'"]'),
+            tb  = get('[data-id="t2:'+ref+'"]'),
+            ob  = get('[data-id="obj:'+ref+'"]');
+      if(nom||ta||tb||ob){
+        let l = "- " + c.querySelector(".carte-titre").textContent + " : " + (nom||"—");
+        if(ta) l += " | Tâche primaire : " + ta;
+        if(tb) l += " | Tâche secondaire : " + tb;
+        if(ob) l += " | Objectif : " + ob;
+        items.push(l);
+      }
+    });
+    if(items.length){
+      lignes.push("");
+      lignes.push("=== " + z.querySelector(".zone-titre").textContent.toUpperCase() + " ===");
+      items.forEach(i=>lignes.push(i));
+    }
+  });
+  const sujet = "Plan de positionnement" + (d ? " — " + d : "") + (p ? " — " + p : "");
+  location.href = "mailto:?subject=" + encodeURIComponent(sujet) + "&body=" + encodeURIComponent(lignes.join("\n"));
+});
+
+const TASKS = ["Porte d'entrée", "Vitre salle à manger", "Plancher propre (pancarte si mouillé)", "Poubelles", "Chaises", "Chaises hautes", "Tables", "Comptoir client (ketchup, serviettes, pailles, couvercles, poubelles)", "Salle de bain (miroirs, papier, poubelles, plancher, savon, table à langer)", "Remplissage (condiments, verres, couvercles, crème/lait)", "Frigo (propre, plat d'eau, dates, thermomètres)", "Lait glacé et garnitures remplis + minuterie", "Station McLivraison préparée (sac, support à verre, papier collant, ustensiles)", "Localisateur + borne avec les factures", "Pâtisserie (quantité selon chartes, présentoir propre, minuterie)", "Station à frite (emballages, 2 salières, distributeur rempli)", "Station à poutine (fromage + minuterie, sauce + minuterie)", "Glace (salle à manger, station à boissons)", "Rouleaux d'imprimantes", "Smoothie (minuterie, glace rempli, sacs)", "Station McCafé (rempli, minuterie)", "Verre de glace rempli + fond d'eau", "Glace (service au volant, station à café)", "Casque avec batteries remplies", "Rouleau d'imprimante (caisse + McCafé + café)", "Fenêtre du drive propre", "Table à préparation propre", "Frigos remplis + thermomètre + plat d'eau (chartes, 2h)", "Table d'assemblage (emballage, sauces — rempli + minuterie, 24/2)", "Tour à pain (minuterie, chartes)", "Congélateur + thermomètre (chartes, 2h)", "Conditionnement du fromage (minuterie 8h)", "Minuterie ustensiles (assainissement)", "Minuterie sur tous les produits (sauces, condiments, œufs)", "Tranche-tomates nettoyé (gant + goupille de sécurité)", "Multiplex remplis + bonbonnes CO2 remplies et enchaînées", "Huiles écumées et filtrées", "Assaisonnement à viande (les 2)", "Téflons en bon état + calendrier de rotation", "Nids d'abeille", "Station à œuf (propre, KPT, ustensile jaune, grattoir, brosse)", "Sceau à linges + minuterie + concentration 100 ppm", "Bouteille assainissant + peroxyde rempli + minuterie", "Station lavage de main", "Aire de travail propre", "Aire du lavabo (3 cuves propres et remplies)", "Bac à tomate vide, propre et retourné"];
+const OBJS = ["Quintile 1", "Quintile 2", "Quintile 3"];
+function suggList(name){ return name==="obj" ? OBJS : TASKS; }
+
+function autosize(t){ t.style.height="auto"; t.style.height=(t.scrollHeight+2)+"px"; }
+function autosizeAll(){ document.querySelectorAll(".auto").forEach(autosize); }
+
+let openBox = null;
+function closeBox(){ if(openBox){ openBox.remove(); openBox=null; } }
+
+function showSuggest(ta){
+  closeBox();
+  const list = suggList(ta.dataset.suggest);
+  const q = ta.value.trim().toLowerCase();
+  const matches = q ? list.filter(x=>x.toLowerCase().includes(q)) : list.slice();
+  if(!matches.length) return;
+  const box = document.createElement("div");
+  box.className = "suggest-box";
+  box.addEventListener("pointerdown", e=>e.preventDefault());
+  matches.forEach(m=>{
+    const o = document.createElement("div");
+    o.className = "opt"; o.textContent = m;
+    o.addEventListener("click", ()=>{ ta.value = m; autosize(ta); closeBox(); });
+    box.appendChild(o);
+  });
+  ta.parentNode.appendChild(box);
+  openBox = box;
+}
+
+document.querySelectorAll(".auto").forEach(ta=>{
+  ta.addEventListener("input", ()=>{ autosize(ta); showSuggest(ta); });
+  ta.addEventListener("focus", ()=> showSuggest(ta));
+  ta.addEventListener("blur", ()=> closeBox());
+});
+
+(async function init(){
+  const r = await stGet("stjovite-plan-roster");
+  if(r){ try{ roster = JSON.parse(r); }catch(e){ roster=[]; } }
+  if(!Array.isArray(roster) || roster.length===0){ roster = [...ROSTER_DEFAUT]; }
+  majJetons();
+  const derniere = await stGet("stjovite-tableau:dernier");
+  if(derniere){
+    const brut = await stGet(derniere);
+    if(brut){
+      try{
+        const o = JSON.parse(brut);
+        cases.forEach(c=>{ if(o[c.dataset.id]) c.value = o[c.dataset.id]; });
+        extras.forEach(x=>{ if(o[x.dataset.id]) x.value = o[x.dataset.id]; });
+        autosizeAll();
+        majJetons();
+      }catch(e){}
+    }
+  }
+})();
+
+})();
+</script>
+</body>
+</html>
