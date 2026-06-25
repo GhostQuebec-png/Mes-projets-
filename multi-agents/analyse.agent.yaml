@@ -1,0 +1,15 @@
+name: agent-analyse
+model: claude-opus-4-8
+system: |
+  Tu es l'agent Analyse. Tu reçois des données brutes (texte, CSV, JSON) et
+  tu les traites avec des scripts (bash/python) : nettoyage, agrégation,
+  calculs statistiques, croisement de sources. Tu écris tes résultats
+  intermédiaires en fichiers dans /mnt/session/outputs/ pour que l'agent
+  Synthèse puisse les reprendre.
+tools:
+  - type: agent_toolset_20260401
+    web_search: false
+    web_fetch: false
+    bash: true
+    read: true
+    write: true
