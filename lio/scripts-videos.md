@@ -229,5 +229,98 @@ Le lien est dans ma bio. Jette un coup d'œil — c'est gratuit de comparer.
 
 ---
 
-*Dernière mise à jour : mai 2026*
+### Script 5 — "Comment bâtir un budget en 20 minutes"
+
+**[ACCROCHE]**
+Tu penses qu'un budget, ça prend des heures pis un tableau Excel compliqué ? Tu te trompes. Je vais te montrer comment le faire en 20 minutes.
+
+**[CONTENU]**
+Étape 1 : sors tes trois derniers relevés bancaires. Pas besoin d'app fancy, juste ton téléphone.
+
+Étape 2 : divise tes dépenses en trois catégories. Essentiel — logement, épicerie, transport. Style de vie — restos, sorties, abonnements. Épargne — ce qui part avant que tu sois tenté de le dépenser.
+
+Étape 3 : vise du 50-30-20. 50 % essentiel, 30 % style de vie, 20 % épargne. C'est un point de départ, pas une loi gravée dans la pierre — ajuste selon ta réalité.
+
+La partie qui compte le plus : automatise ton épargne le jour de ta paie. Si tu attends la fin du mois pour voir ce qu'il reste, il reste jamais rien.
+
+**[APPEL À L'ACTION]**
+Commente "BUDGET" et je t'envoie le gabarit que j'utilise.
+
+---
+
+### Script 6 — "L'épargne d'urgence : combien, où, comment"
+
+**[ACCROCHE]**
+Une dépense imprévue de 800 dollars — une bonne partie des gens ne pourraient pas la couvrir sans mettre ça sur une carte de crédit. Toi, es-tu dans ce groupe-là ?
+
+**[CONTENU]**
+L'épargne d'urgence, c'est ton coussin pour les imprévus — bris de char, perte d'emploi, urgence dentaire. Sans ça, chaque coup dur devient une dette.
+
+Combien : vise 3 à 6 mois de dépenses essentielles. Si t'es travailleur autonome ou dans un secteur instable, vise plutôt 6 mois.
+
+Où : pas dans ton compte chèque où tu vas être tenté d'y toucher. Pas non plus dans ton CELI investi en bourse — tu veux que ce montant-là soit stable et accessible vite. Un compte d'épargne à taux élevé séparé, du genre EQ Bank ou Tangerine, c'est l'idéal.
+
+Comment : commence petit. Même 25 dollars par paie qui rentrent automatiquement dans ce compte-là, ça bâtit un coussin avec le temps.
+
+**[APPEL À L'ACTION]**
+Suis @linvestisseurordinaire — j'explique les finances personnelles simplement, pour les Québécois ordinaires.
+
+---
+
+### Script 7 — "Dettes bonnes vs dettes mauvaises"
+
+**[ACCROCHE]**
+Toutes les dettes ne sont pas égales. Certaines te font avancer, d'autres te coulent. Voici comment faire la différence.
+
+**[CONTENU]**
+Une bonne dette, c'est une dette qui finance quelque chose qui prend de la valeur ou qui augmente ta capacité à gagner de l'argent — une hypothèque sur une maison, un prêt étudiant pour une formation qui paie, un prêt à taux faible pour un véhicule nécessaire au travail.
+
+Une mauvaise dette, c'est une dette à taux élevé pour quelque chose qui perd de la valeur tout de suite — le solde de carte de crédit que tu roules d'un mois à l'autre, un prêt personnel pour des vacances ou du magasinage.
+
+La règle simple : regarde le taux d'intérêt et ce que ça finance. Taux élevé plus ça perd de la valeur tout de suite, c'est une dette à éliminer en priorité.
+
+**[APPEL À L'ACTION]**
+Partage ça à quelqu'un qui a besoin de le lire.
+
+---
+
+### Script 8 — "C'est quoi un fonds indiciel"
+
+**[ACCROCHE]**
+Tout le monde parle de fonds indiciel mais personne explique vraiment c'est quoi.
+
+**[CONTENU]**
+Un fonds indiciel, c'est simplement un panier qui contient un petit morceau de centaines, parfois de milliers d'entreprises en même temps.
+
+Concrètement, ça veut dire qu'au lieu de parier sur une seule action, t'achètes un peu de tout le marché d'un coup. Si une entreprise fait faillite, ton argent est pas concentré là-dessus.
+
+L'autre avantage : les frais de gestion sont beaucoup plus bas qu'un fonds géré activement par quelqu'un qui essaie de "battre le marché" — la plupart n'y arrivent même pas sur le long terme.
+
+C'est exactement ce genre de fonds que tu retrouves par défaut dans les portefeuilles Wealthsimple ou dans un CELI bien construit.
+
+**[APPEL À L'ACTION]**
+Suis @linvestisseurordinaire — j'explique les finances personnelles simplement, pour les Québécois ordinaires.
+
+---
+
+### Script 9 — "Investir vs spéculer — la vraie différence"
+
+**[ACCROCHE]**
+"J'investis" pis "je spécule" — la plupart des gens pensent que c'est pareil. C'est pas le cas, pis la différence peut te coûter cher.
+
+**[CONTENU]**
+Investir, c'est mettre ton argent dans quelque chose de diversifié, sur un horizon de plusieurs années, en fonction de la croissance réelle de l'économie. Un fonds indiciel dans ton CELI, c'est investir.
+
+Spéculer, c'est parier sur une variation de prix à court terme — une crypto qui va "pump", une action qu'un influenceur a mentionnée, des options à effet de levier. C'est possible de gagner. C'est aussi possible de tout perdre vite.
+
+Ça veut pas dire que la spéculation existe pas ou que c'est toujours mauvais. Mais si c'est ton REER ou ton fonds d'urgence qui est dedans, t'es plus dans la spéculation, t'es dans le risque mal placé.
+
+La règle simple : ton argent essentiel s'investit, pas se spécule.
+
+**[APPEL À L'ACTION]**
+Commente "VRAI" si t'as appris quelque chose aujourd'hui.
+
+---
+
+*Dernière mise à jour : septembre 2026*
 *Fichier de référence — Projet Claude lio/ | GitHub: Mes-projets-/lio/contenu/scripts/*
