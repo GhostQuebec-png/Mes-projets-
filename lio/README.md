@@ -11,12 +11,13 @@ Marque de contenu finance personnelle dédiée au marché québécois francophon
 
 ## Structure du dossier
 
-- `charte-editoriale.md` — Ton, vocabulaire, sources autorisées, tabous
-- `brand.md` — Palette, typographies, logo, handles, identité visuelle
-- `strategie.md` — Roadmap, objectifs, calendrier éditorial
-- `contenus-publies/` — Archives des publications par plateforme et par date
-- `references-finance/` — Sources fiables (CRA, AMF, Revenu Québec, etc.)
-- `partenariats-affilies/` — Liste des programmes, conditions, commissions
+- `strategie-marque.md` — Vision, positionnement et stratégie de marque
+- `guide-visuel.md` — Palette, typographies, identité visuelle
+- `calendrier-contenu.md` — Rythme et calendrier éditorial
+- `scripts-videos.md` — Scripts et principes de scripting vidéo
+- `affilies-canada.md` — Programmes affiliés, conditions et règles de divulgation
+
+Pas encore de sous-dossiers d'archives (`contenus-publies/`, etc.) : à créer une fois les premières publications en ligne.
 
 ## Identité de marque
 

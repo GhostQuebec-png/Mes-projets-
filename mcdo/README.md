@@ -11,12 +11,18 @@ Espace de travail dédié à mon rôle d'assistant gérant au McDonald's St-Jovi
 
 ## Structure du dossier
 
-- `charte.md` — Style, ton et règles de communication pour McDo
-- `contexte-restaurant.md` — Infos sur le restaurant 22028 (équipe, KPIs, dynamique)
-- `posts-archives/` — Anciens posts MCD Connect (référence de ton)
-- `emails-archives/` — Échanges avec la hiérarchie (référence de registre)
-- `references/` — Standards McDo Canada, procédures internes, VGER
-- `mentors-mentees/` — Suivi des mentors et mentees (J1/J30/J60/J90)
+- `docs/` — Procédures, normes et références de gestion du personnel
+  - `fiche-role-instructeur.md` — Rôle et attentes des instructeurs
+  - `normes-plancher.md` — Standards McDo Canada appliqués sur le plancher
+  - `organigramme.md` — Structure hiérarchique du restaurant
+  - `processus-formation.md` — Déroulement du parcours de formation
+  - `templates-communications.md` — Modèles de communications internes
+- `suivi/` — Fichiers de suivi et d'évaluation
+  - `grille-evaluation-v2.xlsx` — Grille d'évaluation du personnel
+  - `suivi-mentors-mentores.xlsx` — Suivi mentors/mentorés (J1/J30/J60/J90)
+- `outils/` — Outils et pages web générés pour le restaurant
+  - `index.html` — Outil web du restaurant
+  - `plan-positionnement-redessine.html` — Plan de positionnement du personnel
 
 ## Hiérarchie et collègues clés
 
