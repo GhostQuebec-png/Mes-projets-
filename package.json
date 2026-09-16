@@ -1,0 +1,7 @@
+{
+  "name": "mes-projets-",
+  "private": true,
+  "devDependencies": {
+    "@playwright/mcp": "^0.0.81"
+  }
+}
