@@ -61,33 +61,6 @@ function preserveSource(previous, incoming, generatedAt, previousGeneratedAt, ke
     note:next?.note||next?.error||next?.summary||'Cette source n’a pas fourni une collecte vérifiable lors de la dernière exécution.'};
 }
 
-// Fraîcheur calculée côté serveur, au fuseau du restaurant. Un HTTP 200 ne signifie
-// plus « données à jour » : `health` dit, source par source, si la donnée est du jour.
-const CLEARVIEW_MAX_AGE_MIN=75, SOURCE_MAX_AGE_MIN=150, BRIEFING_MAX_AGE_MIN=75;
-export const torontoDate = (at=new Date()) => new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(at);
-const ageMinutes = (value, now) => { const t=Date.parse(value||''); return Number.isFinite(t)?Math.round((now-t)/60000):null; };
-export function briefingHealth(briefing, now=Date.now()) {
-  const today=torontoDate(new Date(now)), dashboard=objectBlock(briefing?.restaurantDashboard)||{};
-  const briefingAge=ageMinutes(briefing?.generatedAt,now);
-  const sources=SOURCE_DEFINITIONS.map(([key,label])=>{
-    const block=key==='clearview'||key==='medallia'?objectBlock(dashboard[key])||objectBlock(briefing?.[key]):objectBlock(briefing?.[key]);
-    const listed=(briefing?.sources||[]).find(s=>s.id===key)||{};
-    const status=block?.status||listed.status||'error', lastSuccess=block?.lastSuccessfulCollection||listed.lastSuccessfulCollection||null, age=ageMinutes(lastSuccess,now);
-    const ok=successfulCollection({status})&&block?.dataState!=='cached'&&block?.dataState!=='unavailable'&&age!==null&&age>=-5;
-    let freshness=ok&&age<=(key==='clearview'?CLEARVIEW_MAX_AGE_MIN:SOURCE_MAX_AGE_MIN)?'current':lastSuccess?'stale':'unavailable', reason='';
-    if(key==='clearview'&&freshness==='current'&&block?.date!==today){freshness='stale';reason='Données Clearview du '+(block?.date||'jour inconnu')+', pas du '+today+'.';}
-    if(freshness!=='current'&&!reason)reason=status==='reauth_required'?'Session expirée : reconnexion requise dans le collecteur.':(block?.note||listed.note||(lastSuccess?'Aucune collecte réussie récente.':'Aucune collecte réussie enregistrée.'));
-    return {id:key,label,status,freshness,dataDate:key==='clearview'?block?.date||null:null,lastSuccessfulCollection:lastSuccess,ageMinutes:age,reason};
-  });
-  const current=sources.filter(s=>s.freshness==='current').length;
-  return {checkedAt:new Date(now).toISOString(),today,briefingAgeMinutes:briefingAge,briefingFresh:briefingAge!==null&&briefingAge<=BRIEFING_MAX_AGE_MIN,
-    summary:current===sources.length&&briefingAge!==null&&briefingAge<=BRIEFING_MAX_AGE_MIN?'complete':current?'degraded':'down',sources};
-}
-const briefingReply = (body, status=200) => {
-  const health=body&&!body.error?briefingHealth(body):null;
-  return Response.json(health?{...body,health}:body,{status,headers:{...headers,...(health?{'X-Briefing-Health':health.summary}:{})}});
-};
-
 export function mergeBriefing(previous, incoming) {
   if(previous&&Date.parse(incoming.generatedAt)<Date.parse(previous.generatedAt))return previous;
   const result={...incoming}, old=previous||{}, at=incoming.generatedAt;
@@ -115,12 +88,88 @@ export function mergeBriefing(previous, incoming) {
   return result;
 }
 
+// --- Fraîcheur et collecteur externe (v59) ---------------------------------
+// Un HTTP 200 ne veut plus dire « à jour » : le serveur calcule lui-même l'âge
+// du bilan et de chaque source, avec la date du jour à St-Jovite.
+const MAX_FEED_AGE_MS=75*60*1000;
+const COLLECTOR_KEYS=['mail','medallia','clearview','mchire','employeeOfMonth'];
+const FAILURE_STATES=['reauth_required','error','not_available','partial','stale'];
+const torontoDay=(date=new Date(Date.now()))=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);
+const sameSecret=(a,b)=>{a=String(a||'');b=String(b||'');if(!a||!b||a.length!==b.length)return false;let diff=0;for(let i=0;i<a.length;i++)diff|=a.charCodeAt(i)^b.charCodeAt(i);return diff===0;};
+const readRow=async(env,id)=>{const row=await env.DB.prepare("SELECT body FROM gestion_documents WHERE id = ?").bind(id).first();return row?.body?JSON.parse(row.body):null;};
+
+// Temps de service, heures et signaux de main-d'oeuvre : acceptés seulement pour la journée en cours.
+// La comparaison sameDayLastYear est conservée.
+export function enforceSameDayService(block,today=torontoDay()){
+  if(!block||block.date===today)return block;
+  const {labour,speed,peakSales,staffingSignals,...rest}=block;
+  if(!labour&&!speed&&!peakSales&&!staffingSignals)return block;
+  return {...rest,serviceRejected:'Temps de service et heures reçus pour le '+(block.date||'date inconnue')+', pas pour le '+today+'; ils sont ignorés.'};
+}
+
+// Superpose les lectures poussées par le collecteur (POST /api/collector) sur le bilan du flux.
+// Une lecture réussie n'est retenue que si elle est plus récente que celle du bilan.
+// Un échec plus récent remplace l'état, mais garde la dernière donnée fiable en cache.
+export function overlayCollector(briefing,live){
+  if(!briefing||!live?.sources)return briefing;
+  const result={...briefing};
+  if(briefing.restaurantDashboard)result.restaurantDashboard={...briefing.restaurantDashboard};
+  for(const key of COLLECTOR_KEYS){
+    const entry=objectBlock(live.sources[key]);if(!entry)continue;
+    const inDashboard=key==='clearview'||key==='medallia';
+    const current=inDashboard?(result.restaurantDashboard?.[key]||result[key]):result[key];
+    const entryAt=Date.parse(entry.checkedAt||entry.lastAttemptAt||'');if(!Number.isFinite(entryAt))continue;
+    const currentAt=Date.parse(collectionTimestamp(current)||'');
+    const lastAttempt=Date.parse(current?.lastAttemptAt||'');
+    let next;
+    if(successfulCollection(entry)){
+      if(Number.isFinite(currentAt)&&entryAt<=currentAt)continue;
+      next={...entry,dataState:'available',lastSuccessfulCollection:entry.checkedAt,lastAttemptAt:entry.checkedAt,consecutiveFailures:0,collectedBy:'collecteur'};
+    }else{
+      if(Number.isFinite(lastAttempt)&&entryAt<=lastAttempt)continue;
+      const hasData=Boolean(current&&(current.lastSuccessfulCollection||successfulCollection(current)));
+      next={...(current||{}),status:entry.status,note:entry.note||current?.note,lastAttemptAt:entry.lastAttemptAt||entry.checkedAt,dataState:hasData?'cached':'unavailable',collectedBy:'collecteur'};
+    }
+    if(inDashboard){result.restaurantDashboard={...(result.restaurantDashboard||{}),[key]:next};}
+    result[key]=next;
+    result.sources=(result.sources||[]).map(s=>s.id===key?{...s,status:next.status,dataState:next.dataState,lastSuccessfulCollection:next.lastSuccessfulCollection||s.lastSuccessfulCollection||null,lastAttemptAt:next.lastAttemptAt||s.lastAttemptAt,note:next.note||s.note}:s);
+  }
+  result.status=(result.sources||[]).some(s=>!['ok','none'].includes(s.status))?'partial':(result.status==='partial'?'complete':result.status);
+  return result;
+}
+
+// Verdict de fraîcheur calculé côté serveur, ajouté à chaque réponse du briefing.
+export function withFreshness(body,now=Date.now()){
+  if(!body||typeof body!=='object')return body;
+  const generated=Date.parse(body.generatedAt||''),age=Number.isFinite(generated)?now-generated:null;
+  const today=torontoDay(new Date(now));
+  const sources=(body.sources||[]).map(s=>{
+    const at=Date.parse(s.lastSuccessfulCollection||'');
+    const ageMinutes=Number.isFinite(at)?Math.max(0,Math.round((now-at)/60000)):null;
+    return {...s,ageMinutes,fresh:['ok','none'].includes(s.status)&&ageMinutes!==null&&ageMinutes*60000<=MAX_FEED_AGE_MS};
+  });
+  const clearview=body.restaurantDashboard?.clearview;
+  const out={...body,sources,serverCheckedAt:new Date(now).toISOString(),today,feedAgeMinutes:age===null?null:Math.max(0,Math.round(age/60000)),clearviewIsToday:clearview?.date===today};
+  if(age===null||age>MAX_FEED_AGE_MS){
+    out.feedState='stale';
+    out.feedMessage=(age===null?'Bilan sans horodatage valide.':'Aucun nouveau bilan depuis '+Math.round(age/60000)+' min : le collecteur externe ne produit plus de données.')+(body.feedState==='stale'&&body.feedMessage?' '+body.feedMessage:'');
+  }
+  return out;
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     // Sites validates these identity headers before dispatch. Some owner sessions
     // forward the verified email without the optional user ID. Visitor passes
     // still require the ID to bind the invitation to the signed-in account.
+    // Point d'entrée du collecteur externe. Désactivé tant que le secret COLLECTOR_TOKEN n'est pas défini.
+    if(url.pathname==='/api/collector'){
+      if(!env.COLLECTOR_TOKEN)return new Response("Introuvable",{status:404,headers});
+      if(request.method!=='POST')return reply({error:'Méthode non autorisée'},405);
+      if(!sameSecret((request.headers.get('authorization')||'').replace(/^Bearer\s+/i,''),env.COLLECTOR_TOKEN))return reply({error:'Jeton refusé.'},401);
+      return collectorIngest(request,env);
+    }
     const userEmail=request.headers.get('oai-authenticated-user-email')?.trim().toLowerCase();
     const isOwner=userEmail===OWNER_EMAIL;
     if (!userEmail || (!isOwner && !request.headers.get('oai-authenticated-user-id')))
@@ -137,6 +186,8 @@ export default {
       if(url.pathname==='/api/daily-briefing'&&request.method==='GET'){
         if(!isOwner)return reply({error:'Document réservé au propriétaire.'},403);
         let reason='Source automatique indisponible.';
+        let live=null;try{live=await readRow(env,'collector-live');}catch{}
+        const briefingReply=body=>reply(withFreshness(overlayCollector(body,live)));
         try {
           if(!env.BRIEFING_FEED_URL)throw Error('Flux non configuré.');
           const response=await fetch(env.BRIEFING_FEED_URL,{headers:{'Accept':'application/json'},signal:AbortSignal.timeout(12000)});
@@ -150,6 +201,7 @@ export default {
           const previous=existing?.body?JSON.parse(existing.body):null;
           const incomingAt=Date.parse(briefing.generatedAt), previousAt=Date.parse(previous?.generatedAt||0);
           if(!previous||incomingAt>previousAt||(incomingAt===previousAt&&hasNewSourceProof(previous,briefing))){
+            if(briefing.restaurantDashboard?.clearview)briefing.restaurantDashboard={...briefing.restaurantDashboard,clearview:enforceSameDayService(briefing.restaurantDashboard.clearview)};
             const merged=mergeBriefing(previous,briefing),mergedBody=JSON.stringify(merged);
             if(mergedBody!==existing?.body){
               const write=await env.DB.prepare("INSERT INTO gestion_documents (id, body, revision) VALUES (?, ?, 1) ON CONFLICT(id) DO UPDATE SET body = excluded.body, revision = revision + 1 WHERE julianday(json_extract(excluded.body, '$.generatedAt')) >= julianday(json_extract(gestion_documents.body, '$.generatedAt'))").bind('briefing-cache',mergedBody).run();
@@ -165,7 +217,7 @@ export default {
         } catch(error){reason=error?.message||reason;}
         const saved=await env.DB.prepare("SELECT body FROM gestion_documents WHERE id = ?").bind('briefing-cache').first();
         if(saved?.body)return briefingReply({...JSON.parse(saved.body),feedState:'stale',feedMessage:reason});
-        return briefingReply({error:'Aucun bilan récent enregistré. '+reason},503);
+        return reply({error:'Aucun bilan récent enregistré. '+reason},503);
       }
       if(url.pathname==='/outils/suivi-perfectionnement.html'&&request.method==='GET')return new Response(PERF_HTML,{headers:{...headers,'Content-Type':'text/html; charset=utf-8'}});
       if(url.pathname==='/api/weather'&&request.method==='GET'){
@@ -214,3 +266,38 @@ export default {
     }
   }
 };
+
+// POST /api/collector : reçoit une lecture d'une seule source.
+// Corps : {"source":"clearview","block":{"status":"ok","checkedAt":"2026-09-24T10:05:00-04:00","date":"2026-09-24",...}}
+// Échec : {"source":"medallia","block":{"status":"reauth_required","checkedAt":"...","note":"Session expirée"}}
+async function collectorIngest(request,env){
+  try{
+    const raw=await request.text();
+    if(raw.length>300000)return reply({error:'Lecture trop volumineuse.'},413);
+    const payload=JSON.parse(raw),key=String(payload?.source||'');
+    if(!COLLECTOR_KEYS.includes(key))return reply({error:'Source inconnue : '+key},400);
+    let block=objectBlock(payload.block);
+    if(!block)return reply({error:'Bloc de données manquant.'},400);
+    const stamp=block.checkedAt||block.lastAttemptAt||'',at=Date.parse(stamp);
+    if(!Number.isFinite(at)||!/(Z|[+-][0-9]{2}:[0-9]{2})$/.test(stamp))return reply({error:'Horodatage absent ou sans fuseau.'},400);
+    if(at>Date.now()+5*60*1000)return reply({error:'Horodatage dans le futur.'},400);
+    if(Date.now()-at>6*60*60*1000)return reply({error:'Lecture de plus de 6 heures refusée.'},400);
+    if(successfulCollection(block)){
+      if(!block.checkedAt)return reply({error:'Une lecture réussie exige checkedAt.'},400);
+      if(key==='clearview'){
+        if(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(block.date||''))return reply({error:'Clearview : champ date (AAAA-MM-JJ) obligatoire.'},400);
+        block=enforceSameDayService(block);
+      }
+      if(key==='mail'&&block.account!==BRIEFING_MAIL_ACCOUNT)return reply({error:'Boîte courriel non reconnue.'},400);
+      if(!collectionProof(key,block,null))return reply({error:'Lecture incomplète : aucune donnée vérifiable pour '+key+'.'},422);
+    }else if(!FAILURE_STATES.includes(block.status))return reply({error:'Statut inconnu : '+block.status},400);
+    const live=(await readRow(env,'collector-live'))||{sources:{}};
+    live.sources={...(live.sources||{}),[key]:{...block,receivedAt:new Date().toISOString()}};
+    live.updatedAt=new Date().toISOString();
+    await env.DB.prepare("INSERT INTO gestion_documents (id, body, revision) VALUES (?, ?, 1) ON CONFLICT(id) DO UPDATE SET body = excluded.body, revision = revision + 1").bind('collector-live',JSON.stringify(live)).run();
+    return reply({ok:true,source:key,status:block.status,serviceRejected:block.serviceRejected||null});
+  }catch(error){
+    const bad=error instanceof SyntaxError;
+    return reply({error:bad?'JSON invalide.':'Enregistrement impossible.'},bad?400:503);
+  }
+}

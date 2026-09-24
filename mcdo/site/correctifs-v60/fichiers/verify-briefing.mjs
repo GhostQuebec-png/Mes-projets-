@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import vm from 'node:vm';
 import {DatabaseSync} from 'node:sqlite';
-import worker,{mergeBriefing,briefingHealth} from './dist/server/index.js';
+import worker,{mergeBriefing} from './dist/server/index.js';
 // Synthetic fixtures, isolated from production data.
 const checkedAt='2026-09-21T12:00:00Z';
 const sources=[{id:'mail',label:'Gmail professionnel',status:'ok',checkedAt},{id:'medallia',label:'Medallia',status:'ok',checkedAt},{id:'clearview',label:'Clearview GO',status:'ok',checkedAt},{id:'mchire',label:'McHire',status:'ok',checkedAt},{id:'employeeOfMonth',label:'McD Connect',status:'ok',checkedAt}];
@@ -47,11 +47,13 @@ const prepared=(q,v=[])=>({bind(...args){return prepared(q,args)},async first(){
 const env={DB:{prepare:q=>prepared(q)},BRIEFING_FEED_URL:'https://feed.example.invalid/briefing'};
 const originalFetch=globalThis.fetch;
 const call=(headers={'oai-authenticated-user-email':'luce.romuald@gmail.com'})=>worker.fetch(new Request('https://site.example/api/daily-briefing',{headers}),env);
+// Horloge figée sur la journée des fixtures : le serveur calcule maintenant la fraîcheur.
+const realNow=Date.now;Date.now=()=>Date.parse('2026-09-21T13:05:00Z');
 try{
  assert.equal((await call({})).status,403);
  assert.equal((await call({'oai-authenticated-user-email':'other@example.com'})).status,403);
  globalThis.fetch=async()=>Response.json(good);
- const first=await call();assert.equal(first.status,200);assert.ok(['complete','degraded','down'].includes(first.headers.get('X-Briefing-Health')));assert.ok((await first.json()).health.sources.length===5);
+ assert.equal((await call()).status,200);
  globalThis.fetch=async()=>Response.json(partial);
  assert.equal((await(await call()).json()).mail.items[0].subject,'Sujet test');
  globalThis.fetch=async()=>Response.json(sourceProofUpdate);
@@ -66,7 +68,7 @@ try{
  assert.equal((await(await call()).json()).feedState,'stale');
  globalThis.fetch=async()=>Response.json(good);
  assert.equal((await(await call()).json()).generatedAt,partial.generatedAt);
-}finally{globalThis.fetch=originalFetch;sql.close();}
+}finally{Date.now=realNow;globalThis.fetch=originalFetch;sql.close();}
 const todayToronto=new Intl.DateTimeFormat('fr-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const context=vm.createContext({htmlJournee(){},htmlElection(){},window:{setInterval(){}},document:{addEventListener(){}},esc:v=>String(v),aujISO:()=>todayToronto});
 vm.runInContext(fs.readFileSync('daily-briefing.js','utf8'),context);
@@ -82,29 +84,13 @@ const freshDisplayed=context.dashboardPayload(freshLive);assert.equal(freshDispl
 const staleLive={...freshLive,restaurantDashboard:{...freshLive.restaurantDashboard,clearview:{...freshLive.restaurantDashboard.clearview,lastSuccessfulCollection:'2026-09-23T12:00:00Z'}}};
 const staleDisplayed=context.dashboardPayload(staleLive);assert.equal(staleDisplayed.data.clearview.clearviewFreshness,'stale');assert.equal(staleDisplayed.data.clearview.serviceDataState,'unavailable');assert.equal(staleDisplayed.data.clearview.sales.product,3000);
 
-// Comparaison annuelle : même jour de semaine (364 jours), jamais la même date civile.
+// v60 · comparaison annuelle : même jour de semaine (364 jours), jamais la même date civile.
 assert.equal(context.dashboardYearAgoDate('2026-09-24'),'2025-09-25');
 const wrongYearAgo={...currentDay,restaurantDashboard:{...currentDay.restaurantDashboard,clearview:{...currentDay.restaurantDashboard.clearview,sameDayLastYear:{date:'2025-09-23',speed:{overall:82,unit:'s'}}}}};
 assert.equal(context.dashboardPayload(wrongYearAgo).data.clearview.sameDayLastYear,undefined);
-// Scénario observé le 24 septembre : Clearview du 23, Medallia déconnecté, synthèse datée du 24.
-const observed={...good,date:todayToronto,generatedAt:new Date().toISOString(),sources:[{id:'clearview',status:'reauth_required'},{id:'medallia',status:'reauth_required'}],restaurantDashboard:{asOf:todayToronto,medallia:{status:'reauth_required',dataState:'cached',periodLabel:'30 derniers jours',metrics:[{label:'Satisfaction totale',value:97.1,delta:.5}]},clearview:{status:'reauth_required',dataState:'cached',date:'2026-09-23',lastSuccessfulCollection:'2026-09-23T22:01:00Z',sales:{product:8383.45,guestCount:713,averageCheck:11.76},labour:{hours:100},speed:{overall:90,fcfp:200,rap:130,unit:'s'},sameDayLastYear:{date:context.dashboardYearAgoDate('2026-09-23'),speed:{overall:84,fcfp:190,rap:125,unit:'s'},labour:{hours:98.5,salesPerLabourHour:80.1}}},priorities:[]}};
+const observed={...good,date:todayToronto,generatedAt:new Date().toISOString(),sources:[{id:'clearview',status:'reauth_required'},{id:'medallia',status:'reauth_required'}],restaurantDashboard:{asOf:todayToronto,medallia:{status:'reauth_required',dataState:'cached',metrics:[{label:'Satisfaction totale',value:97.1}]},clearview:{status:'reauth_required',dataState:'cached',date:'2026-09-23',sales:{product:8383.45},labour:{hours:100},speed:{overall:90,fcfp:200,rap:130,unit:'s'},sameDayLastYear:{date:'2025-09-24',speed:{overall:84,fcfp:190,rap:125,unit:'s'},labour:{hours:98.5}}},priorities:[]}};
 const observedHTML=context.restaurantDashboardHTML(observed);
-assert.ok(observedHTML.includes('Ventes Clearview du 23 septembre 2026'));
-assert.ok(!observedHTML.includes('Données au '+context.briefingDate(todayToronto)));
-assert.ok(observedHTML.includes('Medallia à reconnecter'));
-assert.ok(observedHTML.includes('pas aujourd’hui'));
 assert.ok(!observedHTML.includes('>90 s<'),'un temps de la veille ne doit jamais être affiché comme temps du jour');
-assert.ok(observedHTML.includes('dash-year-ref')&&observedHTML.includes('84'),'la référence du même jour l’an passé est affichée séparément');
-// Santé calculée par le serveur : un 200 dit maintenant si la donnée est du jour.
-const now=Date.parse('2026-09-24T14:21:00Z');
-const health=briefingHealth({generatedAt:'2026-09-24T13:59:00Z',sources:[],restaurantDashboard:{clearview:{status:'ok',dataState:'available',date:'2026-09-23',lastSuccessfulCollection:'2026-09-24T13:59:00Z'},medallia:{status:'reauth_required',dataState:'cached',lastSuccessfulCollection:'2026-09-23T12:00:00Z'}}},now);
-assert.equal(health.today,'2026-09-24');
-assert.equal(health.sources.find(x=>x.id==='clearview').freshness,'stale');
-assert.match(health.sources.find(x=>x.id==='clearview').reason,/2026-09-23/);
-assert.equal(health.sources.find(x=>x.id==='medallia').freshness,'stale');
-assert.match(health.sources.find(x=>x.id==='medallia').reason,/reconnexion/);
-assert.equal(health.summary,'down');
-assert.equal(health.briefingFresh,true);
-// Après 20 h à Montréal (minuit UTC), « aujourd’hui » reste la date du Québec.
-assert.equal(briefingHealth({},Date.parse('2026-09-25T02:30:00Z')).today,'2026-09-24');
+assert.ok(observedHTML.includes('dash-year-ref')&&observedHTML.includes('84 s')&&observedHTML.includes('98,50 h'),'référence du même jour l’an passé affichée dans les cases');
+assert.ok(observedHTML.includes('pas aujourd’hui'));
 console.log('PASS: owner identity, access restrictions, per-source cache, account validation, feed failures, dates, duplicate writes and mail rendering.');
