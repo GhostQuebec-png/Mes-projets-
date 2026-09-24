@@ -1,0 +1,209 @@
+diff --git a/daily-briefing.css b/daily-briefing.css
+index 0a2c95e..9f41925 100644
+--- a/daily-briefing.css
++++ b/daily-briefing.css
+@@ -160,3 +160,8 @@
+ .dash-source-freshness strong{font-size:.9rem;line-height:1.35}.dash-source-freshness span{font-size:.84rem;line-height:1.45;overflow-wrap:anywhere}
+ .dash-source-freshness.is-current{border-color:#b9dbc6;border-left-color:#2f6d50;background:#edf7f0;color:#28563e}
+ @media(max-width:520px){.dash-source-freshness{padding:10px 12px}.dash-source-freshness span{font-size:.82rem}}
++
++/* Valeur conservée ou référence annuelle : visible, jamais confondue avec la donnée du jour. */
++.dash-stale-tag,.dash-overview small.dash-stale-tag,.dash-work-card small.dash-stale-tag{display:block;margin-top:6px;font-size:.72rem;line-height:1.3;color:#9a3412;font-weight:600}
++.dash-year-ref,.dash-work-card small.dash-year-ref,.dash-overview small.dash-year-ref{display:block;margin-top:4px;font-size:.7rem;line-height:1.3;opacity:.8;font-weight:500}
++.dash-year-ref::before{content:"An passé · "}
+diff --git a/daily-briefing.js b/daily-briefing.js
+index be9cae2..e76c0ee 100644
+--- a/daily-briefing.js
++++ b/daily-briefing.js
+@@ -109,11 +109,20 @@ function dashboardTimestampLabel(value){
+   const timestamp=Date.parse(value||'');if(!Number.isFinite(timestamp))return '';
+   return new Intl.DateTimeFormat('fr-CA',{timeZone:'America/Toronto',dateStyle:'long',timeStyle:'short'}).format(new Date(timestamp));
+ }
++// Comparaison annuelle : même jour de semaine, 364 jours plus tôt (jeudi contre jeudi).
++function dashboardYearAgoDate(date){
++  if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date||'')))return '';
++  const d=new Date(String(date)+'T12:00:00Z');return Number.isNaN(d.getTime())?'':new Date(d.getTime()-364*86400000).toISOString().slice(0,10);
++}
++function briefingWeekdayDate(value){if(!value)return '';const d=new Date(String(value).slice(0,10)+'T12:00:00');return Number.isNaN(d.getTime())?String(value):d.toLocaleDateString('fr-CA',{weekday:'long',day:'numeric',month:'long',year:'numeric'});}
+ function dashboardSameDayLastYear(value){
+   const candidate=dashboardObject(value?.sameDayLastYear)||dashboardObject(value?.comparison?.sameDayLastYear)||dashboardObject(value?.yearAgo);
+   if(!candidate)return null;
+   const date=String(candidate.date||candidate.asOf||'').slice(0,10);
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return null;
++  // Une comparaison qui ne tombe pas sur le même jour de semaine est refusée plutôt qu'affichée à tort.
++  const reference=dashboardYearAgoDate(value?.date||aujISO());
++  if(reference&&date!==reference)return null;
+   const hasNested=['sales','labour','speed'].some(key=>dashboardObject(candidate[key])&&Object.values(candidate[key]).some(dashboardHasNumber));
+   const hasDirect=Object.entries(candidate).some(([key,val])=>key!=='date'&&key!=='asOf'&&dashboardHasNumber(val));
+   return hasNested||hasDirect?{...candidate,date}:null;
+@@ -134,7 +143,7 @@ function dashboardPayload(briefing){
+           merged.labour=null;merged.speed=null;merged.peakSales=[];merged.staffingSignals=[];merged.serviceDataState='unavailable';
+           merged.serviceUnavailableReason=!liveCurrent?'Aucune collecte Clearview confirmée aujourd’hui dans les 75 dernières minutes; aucune valeur antérieure n’est utilisée pour les temps de service.':'Temps de service non fournis pour la journée affichée; aucune valeur de la journée précédente n’est utilisée.';
+         }else merged.serviceDataState='current';
+-        if(comparison){merged.sameDayLastYear=comparison;hasYearAgo=true;yearAgoDate=comparison.date;}
++        if(comparison){merged.sameDayLastYear=comparison;hasYearAgo=true;yearAgoDate=comparison.date;}else delete merged.sameDayLastYear;
+         // Ces propriétés appartiennent à l'ancienne logique de repli; elles ne doivent plus réapparaître.
+         delete merged.referenceFields;delete merged.referenceAsOf;delete merged.referenceLabel;
+         data[key]=merged;
+@@ -295,7 +304,7 @@ function dashboardSameDayLastYearHTML(value){
+   if(dashboardHasNumber(labour.transactionsPerLabourHour))rows.push('<div><span>TPEH</span><strong>'+briefingUnavailable(labour.transactionsPerLabourHour)+'</strong></div>');
+   if(dashboardHasNumber(sales.product))rows.push('<div><span>Ventes produit</span><strong>'+briefingMoney(sales.product)+'</strong></div>');
+   if(!rows.length)return '';
+-  return '<details class="dash-inline-details dash-year-ago"><summary>Comparer au même jour de l’année précédente</summary><p class="dash-note">Données source du '+esc(briefingDate(value.date))+'. Cette comparaison est affichée séparément et ne remplace jamais les valeurs du jour.</p><div class="dash-year-grid">'+rows.join('')+'</div></details>';
++  return '<details class="dash-inline-details dash-year-ago"><summary>Comparer au même jour de l’année précédente</summary><p class="dash-note">Données source du '+esc(briefingWeekdayDate(value.date))+' (même jour de semaine). Cette comparaison est affichée séparément et ne remplace jamais les valeurs du jour.</p><div class="dash-year-grid">'+rows.join('')+'</div></details>';
+ }
+ function restaurantDashboardHTML(briefing){
+   dailyDashboardInsights={};dailyDashboardInsightCounter=0;
+@@ -309,19 +318,24 @@ function restaurantDashboardHTML(briefing){
+   const labourInsight={title:'Productivité VPHT',tone:'neutral',explanation:labour.explanation||(c.serviceDataState==='current'?'Le VPHT relie les ventes aux heures travaillées. Une valeur élevée peut aussi coïncider avec une équipe sous pression.':'Le rapport de la journée affichée ne fournit pas encore les heures travaillées; aucune valeur de la journée précédente n’est utilisée.'),solution:labour.solution||(c.serviceDataState==='current'?'Comparer la productivité avec la rapidité, les plaintes, les tâches et les qualifications avant de modifier les heures.':'Relancer la collecte Clearview de la journée affichée, puis vérifier les heures réellement travaillées avant toute décision de planification.')};
+   const priorityDetails=priorities.map((p,i)=>dashboardPriorityDetails(p,i));
+   const prioritiesInsight={title:'Priorités actives',tone:attention?'negative':'positive',explanation:attention?(attention===1?'1 priorité élevée ou critique demande une vérification et un suivi.':attention+' priorités élevées ou critiques demandent une vérification et un suivi.'):'Aucune priorité élevée ou critique dans les données disponibles.',solution:attention?'Commencer par le premier axe critique ou élevé, confirmer la cause sur le quart, appliquer l’action indiquée puis mesurer le résultat à la prochaine collecte.':'Poursuivre le suivi des résultats et des pratiques.',details:priorityDetails};
++  const medalliaStale=(m.status&&!['ok','none'].includes(m.status))||m.dataState==='cached';
++  const staleTag=text=>'<small class="dash-stale-tag">'+esc(text)+'</small>';
++  const yearAgo=c.sameDayLastYear,yearAgoSpeed=yearAgo?.speed||{},yearAgoLabour=yearAgo?.labour||{};
++  const yearAgoShort=yearAgo?.date?new Date(yearAgo.date+'T12:00:00').toLocaleDateString('fr-CA',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';
++  const yearAgoRef=(value,unit='')=>c.serviceDataState==='current'||!dashboardHasNumber(value)?'':'<small class="dash-year-ref" title="Même jour de semaine l’an passé : '+esc(briefingWeekdayDate(yearAgo.date))+'">'+esc(yearAgoShort)+' : '+esc(briefingNumber(value,Number(value)%1?2:0)+(unit?' '+unit:''))+'</small>';
+   const overview='<div class="dash-overview">'+
+-    '<article class="dash-clickable"'+dashboardInsightAttrs({...satisfaction,title:'Satisfaction 30 jours'})+'><span>Satisfaction 30 jours</span><strong>'+briefingNumber(satisfaction?.value,1)+' %</strong><small>'+dashboardDelta(satisfaction?.delta)+'</small>'+dashboardMiniTrend(m.weekly)+dashboardInsightBadge(satisfaction||{})+'</article>'+
+-    '<article class="dash-clickable"'+dashboardInsightAttrs(salesInsight)+'><span>Ventes produit</span><strong>'+briefingMoney(sales.product)+'</strong><small>'+briefingNumber(sales.guestCount)+' transactions · '+briefingMoney(sales.averageCheck)+' moy.</small>'+dashboardInsightBadge(salesInsight)+'</article>'+
+-    '<article class="dash-clickable"'+dashboardInsightAttrs(labourInsight)+'><span>Productivité</span><strong>'+briefingNumber(labour.salesPerLabourHour,2)+' $</strong><small>VPHT · '+briefingNumber(labour.hours,2)+' h travaillées</small>'+dashboardInsightBadge(labourInsight)+'</article>'+
++    '<article class="dash-clickable"'+dashboardInsightAttrs({...satisfaction,title:'Satisfaction 30 jours'})+'><span>Satisfaction 30 jours</span><strong>'+briefingNumber(satisfaction?.value,1)+' %</strong><small>'+dashboardDelta(satisfaction?.delta)+'</small>'+(medalliaStale?staleTag('Dernière donnée conservée · '+(m.periodLabel||'période non confirmée')+' · Medallia à reconnecter'):'')+dashboardMiniTrend(m.weekly)+dashboardInsightBadge(satisfaction||{})+'</article>'+
++    '<article class="dash-clickable"'+dashboardInsightAttrs(salesInsight)+'><span>Ventes produit</span><strong>'+briefingMoney(sales.product)+'</strong><small>'+briefingNumber(sales.guestCount)+' transactions · '+briefingMoney(sales.averageCheck)+' moy.</small>'+(c.date&&c.date!==aujISO()?staleTag('Journée du '+briefingDate(c.date)+', pas aujourd’hui'):'')+dashboardInsightBadge(salesInsight)+'</article>'+
++    '<article class="dash-clickable"'+dashboardInsightAttrs(labourInsight)+'><span>Productivité</span><strong>'+(dashboardHasNumber(labour.salesPerLabourHour)?briefingNumber(labour.salesPerLabourHour,2)+' $':'Non collecté')+'</strong><small>'+(dashboardHasNumber(labour.salesPerLabourHour)?'VPHT · '+briefingNumber(labour.hours,2)+' h travaillées':'VPHT du jour non collecté')+'</small>'+yearAgoRef(yearAgoLabour.salesPerLabourHour,'$')+dashboardInsightBadge(labourInsight)+'</article>'+
+     '<article class="dash-clickable '+(attention?'attention':'')+'"'+dashboardInsightAttrs(prioritiesInsight)+'><span>Priorités actives</span><strong>'+briefingNumber(attention)+'</strong><small>'+attention+' priorité'+(attention===1?'':'s')+' à examiner</small>'+dashboardInsightBadge(prioritiesInsight)+'</article></div>';
+   const priorityList=priorities.slice(0,3).map((p,i)=>'<article class="dash-decision dash-clickable"'+dashboardInsightAttrs({...p,tone:'negative',explanation:'Où : '+(p.evidence||'Constat indisponible.')+' Pourquoi : le niveau '+(p.level||'à surveiller')+' impose une vérification; la cause reste à confirmer sur le quart.',solution:p.action,details:[dashboardPriorityDetails(p,i)]})+'><b>'+String(i+1).padStart(2,'0')+'</b><div><strong>'+esc(p.title)+'</strong><p>'+esc(p.evidence||'Constat indisponible.')+'</p></div>'+dashboardInsightBadge({tone:'negative'})+'</article>').join('');
+   const otherPriorities=priorities.length>3?'<details class="dash-inline-details"><summary>'+briefingNumber(priorities.length-3)+' autre'+(priorities.length-3===1?' axe':'s axes')+'</summary><div class="dash-priorities">'+priorities.slice(3).map((p,i)=>dashboardPriority(p,i+3)).join('')+'</div></details>':'';
+   const decisions='<section class="dash-work-card dash-decisions"><header><span class="briefing-kicker">Décisions du jour</span><h5>Axes à traiter</h5></header>'+(priorityList||'<p class="dash-empty">Aucun axe signalé dans les données disponibles.</p>')+otherPriorities+'</section>';
+   const operations='<section class="dash-work-card dash-operations"><header><span class="briefing-kicker">Clearview GO · '+esc(briefingDate(c.date))+'</span><h5>Répartition des ventes</h5></header>'+dashboardSalesDonut(c.channels,sales.product)+'<details class="dash-inline-details"><summary>Exploitation et ventes · détails</summary><div class="dash-cash-grid"><div><span>Ventes nettes</span><strong>'+briefingMoney(sales.net)+'</strong></div><div><span>Ventes brutes</span><strong>'+briefingMoney(sales.gross)+'</strong></div><div><span>Remboursements</span><strong>'+briefingNumber(sales.refundCount)+'</strong><small>'+briefingMoney(sales.refundAmount)+'</small></div><div><span>Commandes annulées</span><strong>'+briefingNumber(sales.voidCount)+'</strong><small>'+briefingMoney(sales.voidAmount)+'</small></div></div><div class="dash-cash-alert dash-clickable"'+dashboardInsightAttrs({...cash,title:'Écart de dépôt'})+'><span>Écart dépôt</span><strong>'+briefingMoney(cash.variance)+'</strong><small>Attendu '+briefingMoney(cash.expectedDeposit)+' · Réel '+briefingMoney(cash.actualDeposit)+'</small>'+dashboardInsightBadge(cash)+'</div></details></section>';
+   const first=speed.hotspots?.[0],serviceNote=c.serviceDataState==='current'?'':'<p class="dash-note">'+esc(c.serviceUnavailableReason||'Temps de service non fournis pour la journée affichée; aucune valeur de la journée précédente n’est utilisée.')+'</p>',yearAgoNote=dashboardSameDayLastYearHTML(c.sameDayLastYear);
+-  const speedPanel='<section class="dash-work-card dash-operations"><header><span class="briefing-kicker">Exploitation</span><h5>Rapidité de service</h5></header><div class="dash-speed">'+[['COA',speed.overall,'COA (« tous côtés »)'],['FCFP',speed.fcfp,'FCFP'],['RàP',speed.rap,'RàP']].map(([label,value,description])=>'<div class="dash-clickable" title="'+esc(description)+'"'+dashboardInsightAttrs({title:'Rapidité · '+label,tone:'neutral',explanation:label==='COA'?'COA signifie « tous côtés » : mesure globale du parcours Clearview. '+(c.serviceDataState==='current'?'Vérifie le volume et les autres étapes avant de conclure.':'La mesure du jour n’est pas disponible; aucune valeur précédente n’est affichée.'):'Valeur Clearview pour la journée affichée. '+(c.serviceDataState==='current'?'Vérifie le volume et les autres étapes avant de conclure.':'La mesure du jour n’est pas disponible; aucune valeur précédente n’est affichée.'),solution:c.serviceDataState==='current'?'Compare plusieurs périodes, puis observe le poste et les ressources au moment de l’écart.':'Relancer la collecte Clearview de la journée affichée, puis observer le parcours réel avant d’agir.'})+'><span>'+label+'</span><strong>'+briefingUnavailable(value,speed.unit||'')+'</strong>'+dashboardInsightBadge({tone:'neutral'})+'</div>').join('')+'</div><div class="dash-planned"><h6>Heures à surveiller</h6>'+serviceNote+(first?dashboardHotspot(first):'<p class="dash-empty">Aucune tranche horaire disponible.</p>')+'<div class="dash-labour"><div><span>Heures travaillées</span><strong>'+briefingUnavailable(labour.hours, 'h')+'</strong></div><div><span>VPHT</span><strong>'+briefingUnavailable(labour.salesPerLabourHour,'$')+'</strong></div><div><span>TPEH</span><strong>'+briefingUnavailable(labour.transactionsPerLabourHour)+'</strong></div></div>'+(speed.hotspots?.length>1?'<details class="dash-inline-details"><summary>Autres heures à surveiller</summary><div class="dash-hotspots">'+speed.hotspots.slice(1).map(dashboardHotspot).join('')+'</div></details>':'')+yearAgoNote+'</div></section>';
++  const speedPanel='<section class="dash-work-card dash-operations"><header><span class="briefing-kicker">Exploitation</span><h5>Rapidité de service</h5></header><div class="dash-speed">'+[['COA',speed.overall,'COA (« tous côtés »)',yearAgoSpeed.overall],['FCFP',speed.fcfp,'FCFP',yearAgoSpeed.fcfp],['RàP',speed.rap,'RàP',yearAgoSpeed.rap]].map(([label,value,description,lastYear])=>'<div class="dash-clickable" title="'+esc(description)+'"'+dashboardInsightAttrs({title:'Rapidité · '+label,tone:'neutral',explanation:label==='COA'?'COA signifie « tous côtés » : mesure globale du parcours Clearview. '+(c.serviceDataState==='current'?'Vérifie le volume et les autres étapes avant de conclure.':'La mesure du jour n’est pas disponible; aucune valeur précédente n’est affichée.'):'Valeur Clearview pour la journée affichée. '+(c.serviceDataState==='current'?'Vérifie le volume et les autres étapes avant de conclure.':'La mesure du jour n’est pas disponible; aucune valeur précédente n’est affichée.'),solution:c.serviceDataState==='current'?'Compare plusieurs périodes, puis observe le poste et les ressources au moment de l’écart.':'Relancer la collecte Clearview de la journée affichée, puis observer le parcours réel avant d’agir.'})+'><span>'+label+'</span><strong>'+briefingUnavailable(value,speed.unit||'')+'</strong>'+yearAgoRef(lastYear,yearAgoSpeed.unit||'s')+dashboardInsightBadge({tone:'neutral'})+'</div>').join('')+'</div><div class="dash-planned"><h6>Heures à surveiller</h6>'+serviceNote+(first?dashboardHotspot(first):'<p class="dash-empty">Aucune tranche horaire disponible.</p>')+'<div class="dash-labour"><div><span>Heures travaillées</span><strong>'+briefingUnavailable(labour.hours, 'h')+'</strong>'+yearAgoRef(yearAgoLabour.hours,'h')+'</div><div><span>VPHT</span><strong>'+briefingUnavailable(labour.salesPerLabourHour,'$')+'</strong>'+yearAgoRef(yearAgoLabour.salesPerLabourHour,'$')+'</div><div><span>TPEH</span><strong>'+briefingUnavailable(labour.transactionsPerLabourHour)+'</strong>'+yearAgoRef(yearAgoLabour.transactionsPerLabourHour)+'</div></div>'+(speed.hotspots?.length>1?'<details class="dash-inline-details"><summary>Autres heures à surveiller</summary><div class="dash-hotspots">'+speed.hotspots.slice(1).map(dashboardHotspot).join('')+'</div></details>':'')+yearAgoNote+'</div></section>';
+   const medalliaBody=((m.metrics||[]).length?'<div class="dash-metrics">'+m.metrics.map(dashboardMetric).join('')+'</div>':'<p class="dash-empty">Indicateurs indisponibles pour cette collecte.</p>')+'<div class="dash-section-title"><h6>Tendance de satisfaction</h6><span>'+briefingNumber(m.responseCount)+' réponses avec score</span></div>'+dashboardWeekly(m.weekly)+(m.themeSignals?.length?'<div class="dash-themes">'+m.themeSignals.map(dashboardTheme).join('')+'</div>':'')+(m.complaints?.length?'<details class="dash-inline-details"><summary>Signalements · '+m.complaints.length+' dossier'+(m.complaints.length===1?'':'s')+' synthétisé'+(m.complaints.length===1?'':'s')+'</summary><div class="dash-complaints">'+m.complaints.map(dashboardComplaint).join('')+'</div></details>':'');
+-  return '<section class="restaurant-dashboard" aria-label="Tableau de bord du restaurant 22028"><header class="dash-hero"><div><span class="briefing-kicker">Restaurant 22028</span><h4>La situation en un coup d’œil</h4><p>'+esc(d.executiveSummary||'Aucun résumé disponible pour cette collecte.')+'</p></div><div class="dash-freshness '+(wrapped.isSnapshot?'snapshot':'live')+'"><strong>'+(wrapped.isSnapshot?'Dernier bilan vérifié':(d.provisional||c.serviceDataState==='unavailable'?'Données provisoires':'Bilan reçu'))+'</strong><span>Données au '+esc(briefingDate(d.asOf||c.date||briefing.date))+'</span>'+(c.serviceDataState==='unavailable'?'<small>Les temps de service attendent une collecte du jour.</small>':'')+'</div></header>'+clearviewNotice+overview+'<div class="dash-main-grid">'+decisions+dashboardRoutine()+'</div><div class="dash-main-grid">'+operations+speedPanel+'</div>'+dashboardAccordion({code:'MX',eyebrow:'Medallia',title:'Expérience client',subtitle:(m.periodLabel||'Période indisponible')+' · '+briefingNumber(m.responseCount)+' réponses avec score',stat:briefingNumber(satisfaction?.value,1)+' %',status:briefingStatusLabel(m.status),statusClass:briefingStatusClass(m.status),body:medalliaBody})+dashboardInsightModalHTML()+'</section>';
++  return '<section class="restaurant-dashboard" aria-label="Tableau de bord du restaurant 22028"><header class="dash-hero"><div><span class="briefing-kicker">Restaurant 22028</span><h4>La situation en un coup d’œil</h4><p>'+esc(d.executiveSummary||'Aucun résumé disponible pour cette collecte.')+'</p></div><div class="dash-freshness '+(wrapped.isSnapshot?'snapshot':'live')+'"><strong>'+(wrapped.isSnapshot?'Dernier bilan vérifié':(d.provisional||c.serviceDataState==='unavailable'?'Données provisoires':'Bilan reçu'))+'</strong><span>'+(c.date?'Ventes Clearview du '+esc(briefingDate(c.date)):'Données au '+esc(briefingDate(d.asOf||briefing.date)))+'</span>'+(d.asOf&&c.date&&d.asOf!==c.date?'<small>Synthèse rédigée le '+esc(briefingDate(d.asOf))+'.</small>':'')+(c.date&&c.date!==aujISO()?'<small>Ce ne sont pas les ventes d’aujourd’hui.</small>':'')+(c.serviceDataState==='unavailable'?'<small>Les temps de service attendent une collecte du jour.</small>':'')+'</div></header>'+clearviewNotice+overview+'<div class="dash-main-grid">'+decisions+dashboardRoutine()+'</div><div class="dash-main-grid">'+operations+speedPanel+'</div>'+dashboardAccordion({code:'MX',eyebrow:'Medallia',title:'Expérience client',subtitle:(m.periodLabel||'Période indisponible')+' · '+briefingNumber(m.responseCount)+' réponses avec score',stat:briefingNumber(satisfaction?.value,1)+' %',status:briefingStatusLabel(m.status),statusClass:briefingStatusClass(m.status),body:medalliaBody})+dashboardInsightModalHTML()+'</section>';
+ }
+ 
+ function dailyBriefingHTML(){
+diff --git a/verify-briefing.mjs b/verify-briefing.mjs
+index 02aa105..7afa89f 100644
+--- a/verify-briefing.mjs
++++ b/verify-briefing.mjs
+@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
+ import fs from 'node:fs';
+ import vm from 'node:vm';
+ import {DatabaseSync} from 'node:sqlite';
+-import worker,{mergeBriefing} from './dist/server/index.js';
++import worker,{mergeBriefing,briefingHealth} from './dist/server/index.js';
+ // Synthetic fixtures, isolated from production data.
+ const checkedAt='2026-09-21T12:00:00Z';
+ const sources=[{id:'mail',label:'Gmail professionnel',status:'ok',checkedAt},{id:'medallia',label:'Medallia',status:'ok',checkedAt},{id:'clearview',label:'Clearview GO',status:'ok',checkedAt},{id:'mchire',label:'McHire',status:'ok',checkedAt},{id:'employeeOfMonth',label:'McD Connect',status:'ok',checkedAt}];
+@@ -51,7 +51,7 @@ try{
+  assert.equal((await call({})).status,403);
+  assert.equal((await call({'oai-authenticated-user-email':'other@example.com'})).status,403);
+  globalThis.fetch=async()=>Response.json(good);
+- assert.equal((await call()).status,200);
++ const first=await call();assert.equal(first.status,200);assert.ok(['complete','degraded','down'].includes(first.headers.get('X-Briefing-Health')));assert.ok((await first.json()).health.sources.length===5);
+  globalThis.fetch=async()=>Response.json(partial);
+  assert.equal((await(await call()).json()).mail.items[0].subject,'Sujet test');
+  globalThis.fetch=async()=>Response.json(sourceProofUpdate);
+@@ -75,10 +75,36 @@ for(const expected of ['Sujet test','Résumé test','Action test'])assert.ok(htm
+ const displayed=context.dashboardPayload(partial);
+ assert.equal(displayed.data.medallia.status,'reauth_required');assert.equal(displayed.data.medallia.dataState,'cached');assert.ok(displayed.data.medallia.metrics.length);
+ assert.equal(displayed.data.clearview.serviceDataState,'unavailable');assert.equal(displayed.data.clearview.labour,null);assert.equal(displayed.data.clearview.speed,null);assert.equal(displayed.data.clearview.referenceLabel,undefined);
+-const currentDay={...good,date:'2026-09-23',restaurantDashboard:{medallia:good.restaurantDashboard.medallia,clearview:{status:'ok',date:'2026-09-23',sales:{product:100},labour:{hours:null,salesPerLabourHour:null,transactionsPerLabourHour:null},speed:{overall:null,fcfp:null,rap:null,unit:'s',hotspots:[]},sameDayLastYear:{date:'2025-09-23',speed:{overall:82,unit:'s'}}},priorities:[]}};
+-const currentDisplayed=context.dashboardPayload(currentDay);assert.equal(currentDisplayed.data.clearview.serviceDataState,'unavailable');assert.equal(currentDisplayed.data.clearview.labour,null);assert.equal(currentDisplayed.data.clearview.sameDayLastYear.date,'2025-09-23');assert.equal(currentDisplayed.data.clearview.referenceLabel,undefined);
++const currentDay={...good,date:'2026-09-23',restaurantDashboard:{medallia:good.restaurantDashboard.medallia,clearview:{status:'ok',date:'2026-09-23',sales:{product:100},labour:{hours:null,salesPerLabourHour:null,transactionsPerLabourHour:null},speed:{overall:null,fcfp:null,rap:null,unit:'s',hotspots:[]},sameDayLastYear:{date:'2025-09-24',speed:{overall:82,unit:'s'}}},priorities:[]}};
++const currentDisplayed=context.dashboardPayload(currentDay);assert.equal(currentDisplayed.data.clearview.serviceDataState,'unavailable');assert.equal(currentDisplayed.data.clearview.labour,null);assert.equal(currentDisplayed.data.clearview.sameDayLastYear.date,'2025-09-24');assert.equal(currentDisplayed.data.clearview.referenceLabel,undefined);
+ const liveReadAt=new Date().toISOString(),freshLive={...good,date:todayToronto,generatedAt:liveReadAt,sources:[{id:'clearview',status:'ok',checkedAt:liveReadAt,lastSuccessfulCollection:liveReadAt}],restaurantDashboard:{asOf:todayToronto,clearview:{status:'ok',dataState:'available',date:todayToronto,lastSuccessfulCollection:liveReadAt,sales:{product:3000},labour:{hours:12,salesPerLabourHour:60,transactionsPerLabourHour:5},speed:{overall:60,fcfp:150,rap:120,unit:'s',hotspots:[]}},priorities:[]}};
+ const freshDisplayed=context.dashboardPayload(freshLive);assert.equal(freshDisplayed.data.clearview.clearviewFreshness,'current');assert.equal(freshDisplayed.data.clearview.serviceDataState,'current');
+ const staleLive={...freshLive,restaurantDashboard:{...freshLive.restaurantDashboard,clearview:{...freshLive.restaurantDashboard.clearview,lastSuccessfulCollection:'2026-09-23T12:00:00Z'}}};
+ const staleDisplayed=context.dashboardPayload(staleLive);assert.equal(staleDisplayed.data.clearview.clearviewFreshness,'stale');assert.equal(staleDisplayed.data.clearview.serviceDataState,'unavailable');assert.equal(staleDisplayed.data.clearview.sales.product,3000);
++
++// Comparaison annuelle : même jour de semaine (364 jours), jamais la même date civile.
++assert.equal(context.dashboardYearAgoDate('2026-09-24'),'2025-09-25');
++const wrongYearAgo={...currentDay,restaurantDashboard:{...currentDay.restaurantDashboard,clearview:{...currentDay.restaurantDashboard.clearview,sameDayLastYear:{date:'2025-09-23',speed:{overall:82,unit:'s'}}}}};
++assert.equal(context.dashboardPayload(wrongYearAgo).data.clearview.sameDayLastYear,undefined);
++// Scénario observé le 24 septembre : Clearview du 23, Medallia déconnecté, synthèse datée du 24.
++const observed={...good,date:todayToronto,generatedAt:new Date().toISOString(),sources:[{id:'clearview',status:'reauth_required'},{id:'medallia',status:'reauth_required'}],restaurantDashboard:{asOf:todayToronto,medallia:{status:'reauth_required',dataState:'cached',periodLabel:'30 derniers jours',metrics:[{label:'Satisfaction totale',value:97.1,delta:.5}]},clearview:{status:'reauth_required',dataState:'cached',date:'2026-09-23',lastSuccessfulCollection:'2026-09-23T22:01:00Z',sales:{product:8383.45,guestCount:713,averageCheck:11.76},labour:{hours:100},speed:{overall:90,fcfp:200,rap:130,unit:'s'},sameDayLastYear:{date:context.dashboardYearAgoDate('2026-09-23'),speed:{overall:84,fcfp:190,rap:125,unit:'s'},labour:{hours:98.5,salesPerLabourHour:80.1}}},priorities:[]}};
++const observedHTML=context.restaurantDashboardHTML(observed);
++assert.ok(observedHTML.includes('Ventes Clearview du 23 septembre 2026'));
++assert.ok(!observedHTML.includes('Données au '+context.briefingDate(todayToronto)));
++assert.ok(observedHTML.includes('Medallia à reconnecter'));
++assert.ok(observedHTML.includes('pas aujourd’hui'));
++assert.ok(!observedHTML.includes('>90 s<'),'un temps de la veille ne doit jamais être affiché comme temps du jour');
++assert.ok(observedHTML.includes('dash-year-ref')&&observedHTML.includes('84'),'la référence du même jour l’an passé est affichée séparément');
++// Santé calculée par le serveur : un 200 dit maintenant si la donnée est du jour.
++const now=Date.parse('2026-09-24T14:21:00Z');
++const health=briefingHealth({generatedAt:'2026-09-24T13:59:00Z',sources:[],restaurantDashboard:{clearview:{status:'ok',dataState:'available',date:'2026-09-23',lastSuccessfulCollection:'2026-09-24T13:59:00Z'},medallia:{status:'reauth_required',dataState:'cached',lastSuccessfulCollection:'2026-09-23T12:00:00Z'}}},now);
++assert.equal(health.today,'2026-09-24');
++assert.equal(health.sources.find(x=>x.id==='clearview').freshness,'stale');
++assert.match(health.sources.find(x=>x.id==='clearview').reason,/2026-09-23/);
++assert.equal(health.sources.find(x=>x.id==='medallia').freshness,'stale');
++assert.match(health.sources.find(x=>x.id==='medallia').reason,/reconnexion/);
++assert.equal(health.summary,'down');
++assert.equal(health.briefingFresh,true);
++// Après 20 h à Montréal (minuit UTC), « aujourd’hui » reste la date du Québec.
++assert.equal(briefingHealth({},Date.parse('2026-09-25T02:30:00Z')).today,'2026-09-24');
+ console.log('PASS: owner identity, access restrictions, per-source cache, account validation, feed failures, dates, duplicate writes and mail rendering.');
+diff --git a/worker.js b/worker.js
+index 46f5032..b96ccb3 100644
+--- a/worker.js
++++ b/worker.js
+@@ -61,6 +61,33 @@ function preserveSource(previous, incoming, generatedAt, previousGeneratedAt, ke
+     note:next?.note||next?.error||next?.summary||'Cette source n’a pas fourni une collecte vérifiable lors de la dernière exécution.'};
+ }
+ 
++// Fraîcheur calculée côté serveur, au fuseau du restaurant. Un HTTP 200 ne signifie
++// plus « données à jour » : `health` dit, source par source, si la donnée est du jour.
++const CLEARVIEW_MAX_AGE_MIN=75, SOURCE_MAX_AGE_MIN=150, BRIEFING_MAX_AGE_MIN=75;
++export const torontoDate = (at=new Date()) => new Intl.DateTimeFormat('en-CA',{timeZone:'America/Toronto',year:'numeric',month:'2-digit',day:'2-digit'}).format(at);
++const ageMinutes = (value, now) => { const t=Date.parse(value||''); return Number.isFinite(t)?Math.round((now-t)/60000):null; };
++export function briefingHealth(briefing, now=Date.now()) {
++  const today=torontoDate(new Date(now)), dashboard=objectBlock(briefing?.restaurantDashboard)||{};
++  const briefingAge=ageMinutes(briefing?.generatedAt,now);
++  const sources=SOURCE_DEFINITIONS.map(([key,label])=>{
++    const block=key==='clearview'||key==='medallia'?objectBlock(dashboard[key])||objectBlock(briefing?.[key]):objectBlock(briefing?.[key]);
++    const listed=(briefing?.sources||[]).find(s=>s.id===key)||{};
++    const status=block?.status||listed.status||'error', lastSuccess=block?.lastSuccessfulCollection||listed.lastSuccessfulCollection||null, age=ageMinutes(lastSuccess,now);
++    const ok=successfulCollection({status})&&block?.dataState!=='cached'&&block?.dataState!=='unavailable'&&age!==null&&age>=-5;
++    let freshness=ok&&age<=(key==='clearview'?CLEARVIEW_MAX_AGE_MIN:SOURCE_MAX_AGE_MIN)?'current':lastSuccess?'stale':'unavailable', reason='';
++    if(key==='clearview'&&freshness==='current'&&block?.date!==today){freshness='stale';reason='Données Clearview du '+(block?.date||'jour inconnu')+', pas du '+today+'.';}
++    if(freshness!=='current'&&!reason)reason=status==='reauth_required'?'Session expirée : reconnexion requise dans le collecteur.':(block?.note||listed.note||(lastSuccess?'Aucune collecte réussie récente.':'Aucune collecte réussie enregistrée.'));
++    return {id:key,label,status,freshness,dataDate:key==='clearview'?block?.date||null:null,lastSuccessfulCollection:lastSuccess,ageMinutes:age,reason};
++  });
++  const current=sources.filter(s=>s.freshness==='current').length;
++  return {checkedAt:new Date(now).toISOString(),today,briefingAgeMinutes:briefingAge,briefingFresh:briefingAge!==null&&briefingAge<=BRIEFING_MAX_AGE_MIN,
++    summary:current===sources.length&&briefingAge!==null&&briefingAge<=BRIEFING_MAX_AGE_MIN?'complete':current?'degraded':'down',sources};
++}
++const briefingReply = (body, status=200) => {
++  const health=body&&!body.error?briefingHealth(body):null;
++  return Response.json(health?{...body,health}:body,{status,headers:{...headers,...(health?{'X-Briefing-Health':health.summary}:{})}});
++};
++
+ export function mergeBriefing(previous, incoming) {
+   if(previous&&Date.parse(incoming.generatedAt)<Date.parse(previous.generatedAt))return previous;
+   const result={...incoming}, old=previous||{}, at=incoming.generatedAt;
+@@ -128,17 +155,17 @@ export default {
+               const write=await env.DB.prepare("INSERT INTO gestion_documents (id, body, revision) VALUES (?, ?, 1) ON CONFLICT(id) DO UPDATE SET body = excluded.body, revision = revision + 1 WHERE julianday(json_extract(excluded.body, '$.generatedAt')) >= julianday(json_extract(gestion_documents.body, '$.generatedAt'))").bind('briefing-cache',mergedBody).run();
+               if(!write.meta.changes){
+                 const latest=await env.DB.prepare("SELECT body FROM gestion_documents WHERE id = ?").bind('briefing-cache').first();
+-                if(latest?.body)return reply({...JSON.parse(latest.body),feedState:'available'});
++                if(latest?.body)return briefingReply({...JSON.parse(latest.body),feedState:'available'});
+               }
+             }
+-            return reply({...merged,feedState:'available'});
++            return briefingReply({...merged,feedState:'available'});
+           }
+-          if(Date.parse(briefing.generatedAt)===Date.parse(previous.generatedAt||0))return reply({...previous,feedState:'available'});
+-          return reply({...previous,feedState:'stale',feedMessage:'Le flux a retourné un bilan plus ancien.'});
++          if(Date.parse(briefing.generatedAt)===Date.parse(previous.generatedAt||0))return briefingReply({...previous,feedState:'available'});
++          return briefingReply({...previous,feedState:'stale',feedMessage:'Le flux a retourné un bilan plus ancien.'});
+         } catch(error){reason=error?.message||reason;}
+         const saved=await env.DB.prepare("SELECT body FROM gestion_documents WHERE id = ?").bind('briefing-cache').first();
+-        if(saved?.body)return reply({...JSON.parse(saved.body),feedState:'stale',feedMessage:reason});
+-        return reply({error:'Aucun bilan récent enregistré. '+reason},503);
++        if(saved?.body)return briefingReply({...JSON.parse(saved.body),feedState:'stale',feedMessage:reason});
++        return briefingReply({error:'Aucun bilan récent enregistré. '+reason},503);
+       }
+       if(url.pathname==='/outils/suivi-perfectionnement.html'&&request.method==='GET')return new Response(PERF_HTML,{headers:{...headers,'Content-Type':'text/html; charset=utf-8'}});
+       if(url.pathname==='/api/weather'&&request.method==='GET'){
