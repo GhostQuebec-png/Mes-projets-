@@ -1,0 +1,35 @@
+diff --git a/daily-briefing.js b/daily-briefing.js
+index 3eb5261..ddc86fa 100644
+--- a/daily-briefing.js
++++ b/daily-briefing.js
+@@ -332,7 +332,8 @@ function restaurantDashboardHTML(briefing){
+   const prioritiesInsight={title:'Priorités actives',tone:attention?'negative':'positive',explanation:attention?(attention===1?'1 priorité élevée ou critique demande une vérification et un suivi.':attention+' priorités élevées ou critiques demandent une vérification et un suivi.'):'Aucune priorité élevée ou critique dans les données disponibles.',solution:attention?'Commencer par le premier axe critique ou élevé, confirmer la cause sur le quart, appliquer l’action indiquée puis mesurer le résultat à la prochaine collecte.':'Poursuivre le suivi des résultats et des pratiques.',details:priorityDetails};
+   const yearAgo=c.sameDayLastYear,yearAgoSpeed=yearAgo?.speed||{},yearAgoLabour=yearAgo?.labour||{};
+   const yearAgoShort=yearAgo?.date?new Date(yearAgo.date+'T12:00:00').toLocaleDateString('fr-CA',{weekday:'short',day:'numeric',month:'short',year:'numeric'}):'';
+-  const yearAgoRef=(value,unit='')=>c.serviceDataState==='current'||!dashboardHasNumber(value)?'':'<small class="dash-year-ref" title="Même jour de semaine l’an passé : '+esc(briefingWeekdayDate(yearAgo.date))+'">'+esc(yearAgoShort)+' : '+esc(briefingNumber(value,Number(value)%1?2:0)+(unit?' '+unit:''))+'</small>';
++  // v61 : dans les cases du jour, seule la référence du même jour de semaine qu'aujourd'hui est affichée.
++  const yearAgoRef=(value,unit='')=>c.serviceDataState==='current'||!dashboardHasNumber(value)||yearAgo?.date!==dashboardYearAgoDate(aujISO())?'':'<small class="dash-year-ref" title="Même jour de semaine l’an passé : '+esc(briefingWeekdayDate(yearAgo.date))+'">'+esc(yearAgoShort)+' : '+esc(briefingNumber(value,Number(value)%1?2:0)+(unit?' '+unit:''))+'</small>';
+   const overview='<div class="dash-overview">'+
+     '<article class="dash-clickable"'+dashboardInsightAttrs({...satisfaction,title:'Satisfaction 30 jours'})+'><span>Satisfaction 30 jours</span><strong>'+briefingNumber(satisfaction?.value,1)+' %</strong><small>'+dashboardDelta(satisfaction?.delta)+'</small>'+dashboardMiniTrend(m.weekly)+dashboardCachedTag(m)+dashboardInsightBadge(satisfaction||{})+'</article>'+
+     '<article class="dash-clickable"'+dashboardInsightAttrs(salesInsight)+'><span>Ventes produit</span><strong>'+briefingMoney(sales.product)+'</strong><small>'+briefingNumber(sales.guestCount)+' transactions · '+briefingMoney(sales.averageCheck)+' moy.</small>'+(c.date&&c.date!==aujISO()?'<small class="dash-stale-tag">'+esc('Journée du '+briefingDate(c.date)+', pas aujourd’hui')+'</small>':'')+dashboardInsightBadge(salesInsight)+'</article>'+
+diff --git a/verify-briefing.mjs b/verify-briefing.mjs
+index 1a5c3f3..c8f2b53 100644
+--- a/verify-briefing.mjs
++++ b/verify-briefing.mjs
+@@ -91,6 +91,15 @@ assert.equal(context.dashboardPayload(wrongYearAgo).data.clearview.sameDayLastYe
+ const observed={...good,date:todayToronto,generatedAt:new Date().toISOString(),sources:[{id:'clearview',status:'reauth_required'},{id:'medallia',status:'reauth_required'}],restaurantDashboard:{asOf:todayToronto,medallia:{status:'reauth_required',dataState:'cached',metrics:[{label:'Satisfaction totale',value:97.1}]},clearview:{status:'reauth_required',dataState:'cached',date:'2026-09-23',sales:{product:8383.45},labour:{hours:100},speed:{overall:90,fcfp:200,rap:130,unit:'s'},sameDayLastYear:{date:'2025-09-24',speed:{overall:84,fcfp:190,rap:125,unit:'s'},labour:{hours:98.5}}},priorities:[]}};
+ const observedHTML=context.restaurantDashboardHTML(observed);
+ assert.ok(!observedHTML.includes('>90 s<'),'un temps de la veille ne doit jamais être affiché comme temps du jour');
+-assert.ok(observedHTML.includes('dash-year-ref')&&observedHTML.includes('84 s')&&observedHTML.includes('98,50 h'),'référence du même jour l’an passé affichée dans les cases');
++assert.ok(!observedHTML.includes('dash-year-ref'),'bloc de la veille : aucune valeur de l’an passé dans les cases du jour (sa référence ne tombe pas le même jour de semaine qu’aujourd’hui)');
++// v61 : bloc du jour dont la lecture a plus de 75 min. Les cases du jour affichent la référence d'aujourd'hui moins 364 jours.
++const todayYearAgo=context.dashboardYearAgoDate(todayToronto),oldRead=new Date(Date.now()-2*60*60*1000).toISOString();
++const lateToday={...observed,restaurantDashboard:{...observed.restaurantDashboard,clearview:{status:'ok',dataState:'available',date:todayToronto,lastSuccessfulCollection:oldRead,checkedAt:oldRead,sales:{product:4100},labour:{hours:40},speed:{overall:91,fcfp:201,rap:131,unit:'s'},sameDayLastYear:{date:todayYearAgo,speed:{overall:84,fcfp:190,rap:125,unit:'s'},labour:{hours:98.5}}}}};
++const lateHTML=context.restaurantDashboardHTML(lateToday);
++assert.equal(context.dashboardPayload(lateToday).data.clearview.serviceDataState,'unavailable');
++assert.ok(!lateHTML.includes('>91 s<'),'lecture de plus de 75 min : temps du jour masqués');
++assert.ok(lateHTML.includes('dash-year-ref')&&lateHTML.includes('84 s')&&lateHTML.includes('98,50 h'),'référence du même jour de semaine l’an passé affichée dans les cases du jour');
++const wrongWeekday={...lateToday,restaurantDashboard:{...lateToday.restaurantDashboard,clearview:{...lateToday.restaurantDashboard.clearview,sameDayLastYear:{...lateToday.restaurantDashboard.clearview.sameDayLastYear,date:context.dashboardYearAgoDate(todayToronto).replace(/\d{2}$/,d=>String(Number(d)===1?2:Number(d)-1).padStart(2,'0'))}}}};
++assert.ok(!context.restaurantDashboardHTML(wrongWeekday).includes('dash-year-ref'),'autre jour de semaine refusé');
+ assert.ok(observedHTML.includes('pas aujourd’hui'));
+ console.log('PASS: owner identity, access restrictions, per-source cache, account validation, feed failures, dates, duplicate writes and mail rendering.');
