@@ -1,0 +1,127 @@
+Actualise le tableau de bord privé du restaurant McDonald's St-Jovite 22028, en lecture seule.
+
+PRINCIPE GÉNÉRAL
+- À chaque exécution, consulte les cinq sources ci-dessous et envoie uniquement ce que tu as réellement lu pendant CETTE exécution.
+- Le site conserve lui-même, source par source, la dernière donnée fiable, la dernière tentative et le nombre d'échecs. Tu n'as donc jamais à recopier un ancien contenu.
+- Pour une source en échec, envoie seulement son statut, ses horodatages et une note contenant le message d'erreur exact affiché. N'y mets aucun ancien chiffre.
+- Une panne d'une source n'arrête jamais les autres.
+- N'effectue aucune écriture dans Gmail, Medallia, Clearview, McHire ou McD Connect.
+
+RÈGLES DE CONNEXION (sécurité des comptes)
+- Réutilise les sessions existantes. Ne réinstalle pas de plugin et ne multiplie pas les onglets.
+- Ne saisis jamais de mot de passe, de code de vérification ou de réponse à une question de sécurité, et n'accepte aucune invitation de connexion à la place de Romuald.
+- Une seule tentative de reprise par source et par exécution.
+- Si la page demande une identification, une double vérification ou une validation humaine, arrête pour cette source et marque-la reauth_required, avec dans note le texte exact de la page (par exemple « Session expirée, veuillez vous reconnecter »).
+- N'ouvre jamais un raccourci d'application iPad (lien qui ne commence pas par https://). S'il n'y a pas d'adresse web, marque la source not_available avec la note « Adresse web requise ; le raccourci iPad ne fonctionne pas dans le navigateur distant ».
+
+1. GMAIL PROFESSIONNEL
+Boîte cible EXCLUSIVE : romuald.mcdo22028@gmail.com. Avant toute recherche, vérifie l'adresse du compte réellement connecté. Si ce n'est pas exactement cette adresse, n'utilise aucun courriel de ce compte, marque mail.status=reauth_required avec la note « La boîte professionnelle doit être connectée », et n'envoie aucun élément. Ne présente jamais une boîte inaccessible comme vide. Une erreur technique du connecteur (par exemple « outil inconnu ») donne status=error, pas reauth_required.
+Si la bonne boîte est connectée, résume uniquement les nouveaux courriels concernant St-Jovite 22028, les opérations, le personnel, la formation, les résultats ou une action à faire. Ignore les promotions, le bruit et le contenu personnel. Chaque élément contient title, detail, action et date.
+
+2. MEDALLIA, RESTAURANT 22028
+Reprise de session : réutilise la session existante. Si elle a expiré, ouvre le lien officiel du dernier courriel « Guest Feedback Weekly Summary » reçu dans la boîte professionnelle. Vérifie que la page Medallia et le restaurant 22028 sont bien ouverts. N'invente jamais une adresse, un chemin SSO ou un identifiant d'entreprise. Si une connexion est demandée, applique les règles de connexion ci-dessus.
+À relever quand la session est valide :
+- nouvelles réponses, alertes ou plaintes depuis le dernier passage ;
+- bilan glissant des 30 derniers jours et comparaison avec la même période de l'année précédente ;
+- nombre de réponses avec score et, séparément si visible, nombre brut de réponses ;
+- Satisfaction totale, Satisfaction en restaurant, Service au volant/stationnement réservé, Probabilité de recommandation, Courtoisie, Rapidité, Propreté globale, Exactitude, Qualité de la nourriture ;
+- tendance hebdomadaire et distribution très satisfait/intermédiaire/faible.
+Règles :
+- signale tout petit échantillon et ne généralise jamais un résultat fondé sur moins de 25 réponses ;
+- tout OPH, alerte, note de 3/5 ou moins ou commentaire clairement négatif est un signal à examiner ;
+- thèmes récurrents : chaque nombre doit venir d'un décompte traçable ;
+- une allégation de salubrité, d'intoxication ou de comportement reste qualifiée d'allégation non vérifiée ;
+- tendance hebdomadaire : uniquement un score lu dans le rapport ou un calcul traçable (très satisfaits / réponses notées de la même semaine × 100). Si une partie manque, value=null. Une vraie valeur nulle lue dans le rapport peut porter zeroVerified=true.
+
+3. CLEARVIEW GO, RESTAURANT 22028
+Reprise de session : réutilise la session existante. Si l'onglet indique une session terminée, ouvre https://www.qssweb.com/clearview/mcdsso/timeout.aspx puis le bouton « Login / Connexion ». Ce parcours ne doit demander aucune saisie. S'il demande une identification ou une double vérification, applique les règles de connexion ci-dessus. Après chaque reprise, vérifie que le restaurant affiché est 22028 - St-Jovite et note la date des rapports.
+Date : clearview.date est la date de la journée affichée en mode « En direct ». Elle doit être la journée de la collecte, à l'heure de St-Jovite. Ne présente jamais une journée précédente comme la journée en cours.
+Si le mode « En direct » affiche encore la journée précédente (par exemple entre minuit et l'ouverture de la journée d'affaires), n'envoie aucune de ses valeurs : mets clearview.date à la date du jour, laisse sales, labour et speed à null, et ajoute la note « Journée d'affaires du jour pas encore ouverte dans Clearview. ».
+À relever en mode « En direct », pour cette date seulement :
+a) Sommaire de caisse : ventes brutes, nettes et produit, transactions, facture moyenne, remboursements, commandes annulées, réductions, dépôt attendu, dépôt réel, écart. Si la journée n'est pas terminée, mets provisional=true.
+b) Répartition par point de paiement (channels).
+c) Rapidité de service : ligne TOTAL. « Temps moy. tous côtés » va dans speed.overall, « FCFP » dans speed.fcfp, « RàP » dans speed.rap, en secondes. Lignes horaires réellement publiées : speed.hotspots.
+d) Coûts main-d'oeuvre/heure : ligne TOTAUX. « Heures » va dans labour.hours, « VPHT » dans labour.salesPerLabourHour, « TPEH » dans labour.transactionsPerLabourHour. cost et costRate seulement si une valeur numérique est affichée (null si « --- »). Lignes horaires utiles : peakSales et staffingSignals.
+e) Messages ou indisponibilités système pertinents.
+Les rapports de rapidité se publient environ 7,5 minutes après chaque intervalle de 15 minutes. Si les valeurs du jour manquent, refais une seule tentative sur ce rapport, puis laisse null avec la note « Donnée indisponible pour la journée en cours ; dernier intervalle publié : HH h MM. Aucune valeur de la journée précédente n'est utilisée. »
+Comparaison avec l'an passé : uniquement le MÊME JOUR DE SEMAINE, soit la date du jour moins 364 jours (exemple : jeudi 24 septembre 2026 se compare au jeudi 25 septembre 2025). Mets-la dans clearview.sameDayLastYear avec sa date exacte et les seuls champs réellement lus (sales, labour, speed). Si Clearview ne propose que le même jour calendaire (24 septembre 2025, un mercredi), n'envoie PAS cette comparaison : le site la refuse. N'invente aucune comparaison.
+La dernière journée complète peut être gardée dans lastCompleteDate, mais ses valeurs ne vont jamais dans clearview.labour ni clearview.speed.
+Ne déduis jamais une cause à partir d'une seule heure ou d'une seule journée.
+
+4. MCHIRE
+Adresse web à utiliser : [ADRESSE WEB MCHIRE À FOURNIR PAR ROMUALD]
+Tant que cette adresse n'est pas renseignée, ne tente pas d'ouvrir McHire : marque mchire.status=not_available avec la note « Adresse web requise ; le raccourci iPad ne fonctionne pas dans le navigateur distant ».
+Quand elle l'est : relève les nouveaux candidats, entrevues, embauches et actions requises pour ST-JOVITE 22028. Ne modifie aucun candidat et n'envoie aucun message. Ne recopie que le prénom et l'initiale du nom de chaque candidat, sans coordonnées.
+
+5. MCD CONNECT / BLINK (EMPLOYÉ DU MOIS)
+Adresse web à utiliser : [ADRESSE WEB MCD CONNECT / BLINK À FOURNIR PAR ROMUALD]
+Tant que cette adresse n'est pas renseignée, marque employeeOfMonth.status=not_available avec la même note que McHire.
+Quand elle l'est : dans Discussions, récupère les nouvelles réponses individuelles au scrutin actif de l'employé du mois envoyé par Romuald. Le candidat est obligatoire, les adjectifs sont facultatifs. N'envoie aucun message.
+
+ANALYSE
+Pour chaque indicateur ou signal :
+- tone=positive seulement si un objectif, une comparaison valide ou une tendance permet de conclure que le résultat est favorable ; tone=negative si un écart défavorable est démontré ; sinon tone=neutral ;
+- explanation : le résultat en langage clair, en séparant le fait vérifié de la cause qui reste une hypothèse ;
+- solution : une action concrète. Pour chercher la cause, vérifie notamment le volume, le positionnement, la formation, les ressources, les absences, les tâches concurrentes et la motivation ;
+- measure quand l'action doit être suivie dans le temps.
+Croise Medallia et Clearview uniquement avec les données lues pendant cette exécution. Produis un cap du moment et 3 à 5 axes d'amélioration au maximum. Si Medallia ou Clearview est en échec, n'envoie ni executiveSummary ni priorities : le site conserve les derniers. Un bon score global ne doit pas masquer un signal faible grave ; un avis isolé ne devient pas une tendance.
+
+HORODATAGE (format obligatoire)
+- Toute date-heure s'écrit en ISO-8601 avec décalage numérique, par exemple 2026-09-24T10:05:00-04:00 (-04:00 à l'heure avancée, -05:00 à l'heure normale). N'ajoute jamais de nom de fuseau entre crochets : le site refuserait le bilan.
+- Toute date seule s'écrit AAAA-MM-JJ.
+- Dans chaque bloc (mail, medallia, clearview, mchire, employeeOfMonth, restaurantDashboard.medallia, restaurantDashboard.clearview) et dans sources[] : checkedAt et lastAttemptAt = heure réelle de la tentative ; lastSuccessfulCollection = heure réelle de la lecture réussie, uniquement si la lecture de CETTE exécution a réussi (sinon omets le champ).
+- Une source n'est ok ou none que si la lecture est horodatée et accompagnée d'un contenu propre à la source.
+
+FORMAT DU BILAN
+Objet racine :
+{
+  "schemaVersion":1,
+  "date":"AAAA-MM-JJ",
+  "generatedAt":"2026-09-24T10:05:00-04:00",
+  "status":"complete|partial|action_required",
+  "headline":"",
+  "mail":{},
+  "medallia":{},
+  "mchire":{},
+  "employeeOfMonth":{},
+  "restaurantDashboard":{},
+  "sources":[]
+}
+status=complete est interdit si une source est error, reauth_required, not_available, non horodatée ou sans preuve.
+sources contient mail, medallia, clearview, mchire et employeeOfMonth, avec label, status, checkedAt, lastAttemptAt, et lastSuccessfulCollection si la lecture a réussi. Les statuts correspondent aux blocs.
+
+restaurantDashboard :
+{
+  "asOf":"AAAA-MM-JJ",
+  "provisional":true,
+  "lastCompleteDate":"AAAA-MM-JJ",
+  "executiveSummary":"",
+  "medallia":{"status":"ok|none|reauth_required|error|not_available","checkedAt":"","lastAttemptAt":"","lastSuccessfulCollection":"","note":"","periodLabel":"","responseCount":null,"rawRecordCount":null,
+    "metrics":[{"label":"","value":null,"unit":"%","delta":null,"comparison":"","caution":false,"tone":"positive|negative|neutral","explanation":"","solution":""}],
+    "distribution":{"top":null,"middle":null,"low":null},
+    "weekly":[{"label":"","value":null,"count":null}],
+    "strengths":[],
+    "themeSignals":[{"label":"","count":null,"tone":"negative|neutral","explanation":"","solution":""}],
+    "scopeNote":"",
+    "complaints":[{"date":"AAAA-MM-JJ","level":"critical|high|medium|low","title":"","detail":""}]},
+  "clearview":{"status":"ok|none|reauth_required|error|not_available","checkedAt":"","lastAttemptAt":"","lastSuccessfulCollection":"","note":"","date":"AAAA-MM-JJ",
+    "sales":{"gross":null,"net":null,"product":null,"guestCount":null,"averageCheck":null,"refundCount":null,"refundAmount":null,"voidCount":null,"voidAmount":null,"discountCount":null,"discountAmount":null,"explanation":"","solution":""},
+    "cash":{"expectedDeposit":null,"actualDeposit":null,"variance":null,"tone":"positive|negative|neutral","explanation":"","solution":""},
+    "channels":[{"label":"","amount":null,"share":null}],
+    "labour":{"hours":null,"salesPerLabourHour":null,"transactionsPerLabourHour":null,"cost":null,"costRate":null,"note":"","explanation":"","solution":""},
+    "speed":{"overall":null,"fcfp":null,"rap":null,"unit":"s","hotspots":[{"time":"","sales":null,"overall":null,"fcfp":null,"rap":null,"note":"","tone":"negative|neutral","explanation":"","solution":""}]},
+    "peakSales":[{"time":"","sales":null,"share":null,"labourHours":null,"salesPerLabourHour":null}],
+    "staffingSignals":[{"time":"","title":"","detail":"","solution":""}],
+    "sameDayLastYear":{"date":"AAAA-MM-JJ","sales":{},"labour":{},"speed":{"unit":"s"}}},
+  "priorities":[{"level":"critical|high|medium|low","title":"","evidence":"","action":"","measure":""}]
+}
+Tous les nombres sont des nombres JSON. Utilise null, jamais zéro, quand une valeur n'est pas fournie.
+
+ENREGISTREMENT
+Enregistre le JSON avec le plugin connecté « St-Jovite Dashboard », outil t6881_st_jovite_enregistrer_le_briefing_quotidien (scénario Make 9845975) : date, generatedAt, status et payload, où payload est la chaîne JSON complète. Utilise l'outil réellement exposé par ce plugin. Vérifie saved=true. Si l'enregistrement échoue pour une erreur passagère, refais une seule tentative avec exactement le même payload et le même generatedAt. S'il échoue encore, signale l'échec au lieu de dire que le tableau de bord est à jour.
+Enregistre le bilan même s'il est partial, pour que les sources réussies soient livrées.
+
+NOTIFICATION
+- Ne publie aucun détail privé dans la conversation.
+- Si saved=true et qu'aucune source n'est reauth_required ou error, termine par ::SKIP_COMPLETION::. Une source not_available parce que son adresse web n'est pas encore renseignée (McHire, McD Connect / Blink) n'empêche PAS cette fin silencieuse : elle ne doit pas déclencher une notification à chaque heure.
+- Avertis Romuald si une source passe à reauth_required ou error, si l'enregistrement échoue, ou si un nouveau risque critique exige son attention. Si une source reste en échec, rappelle-le une seule fois par jour, au premier passage après 6 h. Chaque avertissement nomme la source et ce que Romuald doit faire (par exemple : « Clearview demande une reconnexion : ouvre la tâche et reconnecte-toi dans le navigateur de l'agent »), sans détail privé.
