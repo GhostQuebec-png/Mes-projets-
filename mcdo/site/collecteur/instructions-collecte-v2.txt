@@ -51,14 +51,14 @@ La dernière journée complète peut être gardée dans lastCompleteDate, mais s
 Ne déduis jamais une cause à partir d'une seule heure ou d'une seule journée.
 
 4. MCHIRE
-Adresse web à utiliser : [ADRESSE WEB MCHIRE À FOURNIR PAR ROMUALD]
-Tant que cette adresse n'est pas renseignée, ne tente pas d'ouvrir McHire : marque mchire.status=not_available avec la note « Adresse web requise ; le raccourci iPad ne fonctionne pas dans le navigateur distant ».
-Quand elle l'est : relève les nouveaux candidats, entrevues, embauches et actions requises pour ST-JOVITE 22028. Ne modifie aucun candidat et n'envoie aucun message. Ne recopie que le prénom et l'initiale du nom de chaque candidat, sans coordonnées.
+Adresse web à utiliser : https://www.mcdhire.com/signin (confirmée par Romuald le 25 septembre 2026 : c'est l'adresse ouverte par son raccourci « Ouvrir McHire »).
+Reprise de session : réutilise la session existante. Si la page demande une connexion, applique les règles de connexion ci-dessus (aucune saisie à la place de Romuald) et marque mchire.status=reauth_required avec le texte exact de la page.
+Quand la session est valide : relève les nouveaux candidats, entrevues, embauches et actions requises pour ST-JOVITE 22028. Vérifie que le restaurant affiché est bien 22028 avant de relever quoi que ce soit. Ne modifie aucun candidat et n'envoie aucun message. Ne recopie que le prénom et l'initiale du nom de chaque candidat, sans coordonnées.
 
 5. MCD CONNECT / BLINK (EMPLOYÉ DU MOIS)
-Adresse web à utiliser : [ADRESSE WEB MCD CONNECT / BLINK À FOURNIR PAR ROMUALD]
-Tant que cette adresse n'est pas renseignée, marque employeeOfMonth.status=not_available avec la même note que McHire.
-Quand elle l'est : dans Discussions, récupère les nouvelles réponses individuelles au scrutin actif de l'employé du mois envoyé par Romuald. Le candidat est obligatoire, les adjectifs sont facultatifs. N'envoie aucun message.
+McD Connect / Blink est uniquement une application iPad, sans adresse web. Son raccourci ne peut pas s'exécuter dans le navigateur distant.
+Ne tente aucun accès. Marque à chaque exécution employeeOfMonth.status=not_available avec la note « Application iPad uniquement ; non lisible depuis le collecteur distant. Les réponses au scrutin sont à relever par Romuald. », et n'envoie aucune réponse de scrutin.
+Cette source n'est pas une panne : elle ne déclenche aucune notification.
 
 ANALYSE
 Pour chaque indicateur ou signal :
