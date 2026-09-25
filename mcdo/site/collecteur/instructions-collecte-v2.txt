@@ -56,9 +56,10 @@ Reprise de session : réutilise la session existante. Si la page demande une con
 Quand la session est valide : relève les nouveaux candidats, entrevues, embauches et actions requises pour ST-JOVITE 22028. Vérifie que le restaurant affiché est bien 22028 avant de relever quoi que ce soit. Ne modifie aucun candidat et n'envoie aucun message. Ne recopie que le prénom et l'initiale du nom de chaque candidat, sans coordonnées.
 
 5. MCD CONNECT / BLINK (EMPLOYÉ DU MOIS)
-McD Connect / Blink est uniquement une application iPad, sans adresse web. Son raccourci ne peut pas s'exécuter dans le navigateur distant.
-Ne tente aucun accès. Marque à chaque exécution employeeOfMonth.status=not_available avec la note « Application iPad uniquement ; non lisible depuis le collecteur distant. Les réponses au scrutin sont à relever par Romuald. », et n'envoie aucune réponse de scrutin.
-Cette source n'est pas une panne : elle ne déclenche aucune notification.
+Adresse web à utiliser : https://app.joinblink.com (version web officielle de Blink ; l'application iPad et son raccourci ne s'exécutent pas dans le navigateur distant).
+Reprise de session : réutilise la session existante. Si la page demande une connexion, applique les règles de connexion ci-dessus (aucune saisie à la place de Romuald) et marque employeeOfMonth.status=reauth_required avec le texte exact de la page.
+Si l'accès web est refusé par l'organisation (message indiquant que la version web est désactivée), marque employeeOfMonth.status=not_available avec le texte exact de la page, sans nouvelle tentative pendant cette exécution.
+Quand la session est valide : dans Discussions, ouvre uniquement la conversation du scrutin actif de l'employé du mois envoyé par Romuald et récupère les nouvelles réponses individuelles depuis le dernier passage. Le candidat est obligatoire, les adjectifs sont facultatifs. N'ouvre aucune autre conversation, ne recopie aucun autre message, n'envoie aucun message et ne réagis à rien.
 
 ANALYSE
 Pour chaque indicateur ou signal :
@@ -125,5 +126,5 @@ Enregistre le bilan même s'il est partial, pour que les sources réussies soien
 
 NOTIFICATION
 - Ne publie aucun détail privé dans la conversation.
-- Si saved=true et qu'aucune source n'est reauth_required ou error, termine par ::SKIP_COMPLETION::. McD Connect / Blink, toujours not_available parce que c'est une application iPad uniquement, n'empêche PAS cette fin silencieuse : elle ne doit pas déclencher une notification à chaque heure.
+- Si saved=true et qu'aucune source n'est reauth_required ou error, termine par ::SKIP_COMPLETION::. Une source not_available parce que l'organisation bloque son accès web n'empêche PAS cette fin silencieuse : elle ne doit pas déclencher une notification à chaque heure.
 - Avertis Romuald si une source passe à reauth_required ou error, si l'enregistrement échoue, ou si un nouveau risque critique exige son attention. Si une source reste en échec, rappelle-le une seule fois par jour, au premier passage après 6 h. Chaque avertissement nomme la source et ce que Romuald doit faire (par exemple : « Clearview demande une reconnexion : ouvre la tâche et reconnecte-toi dans le navigateur de l'agent »), sans détail privé.
