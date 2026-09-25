@@ -35,8 +35,10 @@ Règles :
 
 3. CLEARVIEW GO, RESTAURANT 22028
 Reprise de session : réutilise la session existante. Si l'onglet indique une session terminée, ouvre https://www.qssweb.com/clearview/mcdsso/timeout.aspx puis le bouton « Login / Connexion ». Ce parcours ne doit demander aucune saisie. S'il demande une identification ou une double vérification, applique les règles de connexion ci-dessus. Après chaque reprise, vérifie que le restaurant affiché est 22028 - St-Jovite et note la date des rapports.
-Date : clearview.date est la date de la journée affichée en mode « En direct ». Elle doit être la journée de la collecte, à l'heure de St-Jovite. Ne présente jamais une journée précédente comme la journée en cours.
-Si le mode « En direct » affiche encore la journée précédente (par exemple entre minuit et l'ouverture de la journée d'affaires), n'envoie aucune de ses valeurs : mets clearview.date à la date du jour, laisse sales, labour et speed à null, et ajoute la note « Journée d'affaires du jour pas encore ouverte dans Clearview. ».
+Chemins vérifiés le 24 septembre 2026 : « Sommaire de caisse > Sommaire », « Sommaire de caisse > Rapidité de service », « Main-d'oeuvre > Chronométrer > Coûts main-d'oeuvre/heure ». Sélectionne le mode « En direct » sur chacune.
+Date : le champ de date historique de Clearview affiche TOUJOURS la veille (sa date maximale est hier), même en mode « En direct ». Ne l'utilise jamais pour dater la journée et n'en conclus pas que les données sont de la veille.
+La date de la journée en cours se lit dans le bloc d'activité en direct du Sommaire de caisse. Si ces activités sont datées d'aujourd'hui (America/Toronto) et que le mode « En direct » est sélectionné, clearview.date = la date d'aujourd'hui, et les tableaux « Rapidité de service » et « Coûts main-d'oeuvre/heure » lus en mode « En direct » appartiennent à cette même journée.
+Si le bloc d'activité en direct est vide ou daté d'une autre journée (par exemple entre minuit et l'ouverture de la journée d'affaires), n'envoie aucune de ses valeurs : mets clearview.date à la date du jour, laisse sales, labour et speed à null et ajoute la note « Journée d'affaires du jour pas encore ouverte dans Clearview. ».
 À relever en mode « En direct », pour cette date seulement :
 a) Sommaire de caisse : ventes brutes, nettes et produit, transactions, facture moyenne, remboursements, commandes annulées, réductions, dépôt attendu, dépôt réel, écart. Si la journée n'est pas terminée, mets provisional=true.
 b) Répartition par point de paiement (channels).
