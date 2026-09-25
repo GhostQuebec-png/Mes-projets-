@@ -125,5 +125,5 @@ Enregistre le bilan même s'il est partial, pour que les sources réussies soien
 
 NOTIFICATION
 - Ne publie aucun détail privé dans la conversation.
-- Si saved=true et qu'aucune source n'est reauth_required ou error, termine par ::SKIP_COMPLETION::. Une source not_available parce que son adresse web n'est pas encore renseignée (McHire, McD Connect / Blink) n'empêche PAS cette fin silencieuse : elle ne doit pas déclencher une notification à chaque heure.
+- Si saved=true et qu'aucune source n'est reauth_required ou error, termine par ::SKIP_COMPLETION::. McD Connect / Blink, toujours not_available parce que c'est une application iPad uniquement, n'empêche PAS cette fin silencieuse : elle ne doit pas déclencher une notification à chaque heure.
 - Avertis Romuald si une source passe à reauth_required ou error, si l'enregistrement échoue, ou si un nouveau risque critique exige son attention. Si une source reste en échec, rappelle-le une seule fois par jour, au premier passage après 6 h. Chaque avertissement nomme la source et ce que Romuald doit faire (par exemple : « Clearview demande une reconnexion : ouvre la tâche et reconnecte-toi dans le navigateur de l'agent »), sans détail privé.
