@@ -114,3 +114,19 @@ Romuald
 3. Ne pas pousser sur `plan-stjovite/main` en pensant que cela met à jour le ChatGPT Site : cela met uniquement à jour GitHub Pages.
 4. Travailler sur des branches dédiées et préserver les paramètres d'accès et secrets de production.
 5. Aucun secret, cookie, code MFA ou jeton ne doit être versé dans GitHub.
+
+
+## Confidentialité du dépôt de travail — constat ChatGPT 2026-10-05
+
+Les dépôts GitHub actuellement utilisés pour la coordination et l'ancien site sont **publics** :
+- `GhostQuebec-png/Mes-projets-`
+- `GhostQuebec-png/plan-stjovite`
+
+Conséquence : une branche non fusionnée n'est pas privée. Il est interdit d'y verser les archives complètes v67/v2.3 ou tout fichier contenant des horaires, données d'employés, documents RH, documents internes ou secrets.
+
+La coordination documentaire non sensible peut rester dans `Mes-projets-`. Pour la source complète du site, la cible recommandée est un **dépôt privé dédié** après validation de Romuald.
+
+### Export v87
+Tentative d'extraction via la projection Site : échec avec le message exact `files.materialize is unavailable for Site projections.`.
+
+Cela confirme que les outils présents peuvent lire les métadonnées de version du Site mais ne peuvent pas matérialiser ses fichiers source exacts.
