@@ -1,9 +1,11 @@
 # TODO partagé
 
 ## Priorité 1 — rendre le projet réellement multi-agent
-- [ ] Identifier la source canonique actuellement publiée de « St-Jovite · Gestion ».
-- [ ] Consigner son dépôt, sa branche, son commit et son environnement dans `ARCHITECTURE.md`.
-- [ ] Vérifier que Claude a accès au même dépôt.
+- [x] Identifier la source actuellement publiée : `plan-stjovite@aef30db` sur GitHub Pages (Claude, 2026-10-05).
+- [x] Consigner son dépôt, sa branche, son commit et son environnement dans `ARCHITECTURE.md`.
+- [ ] Faire confirmer par Romuald que cette URL est bien « St-Jovite · Gestion » (écart de fonctionnalités constaté, voir `ARCHITECTURE.md`).
+- [ ] Si une version plus récente existe hors GitHub, la verser dans `plan-stjovite` sur une branche.
+- [x] Vérifier que Claude a accès au même dépôt (lecture + push confirmés, 2026-10-05).
 - [ ] Vérifier que ChatGPT peut relire les commits et pull requests de Claude.
 - [ ] Adopter une convention de branches pour éviter les modifications concurrentes.
 
