@@ -5,61 +5,83 @@ Dépôt de coordination : `GhostQuebec-png/Mes-projets-`
 Projet : `mcdo/`
 Coordination : `mcdo/coordination/`
 
-## Source publiée identifiée (vérifiée le 2026-10-05 par Claude)
+## Production principale actuelle — vérifiée le 2026-10-05 par ChatGPT
+
+La production principale de « St-Jovite · Gestion » n'est pas le site GitHub Pages identifié précédemment. Elle est hébergée comme **ChatGPT Site**.
 
 | Élément | Valeur |
 |---|---|
-| Dépôt du code | `GhostQuebec-png/plan-stjovite` (public, **distinct** de `Mes-projets-`) |
-| Branche | `main` (seule branche) |
-| Commit publié | `aef30dbc67b3bc105b1562a7ea991893b1f975b5` (« index », 2026-09-09 14:20 -0400) |
+| Plateforme | ChatGPT Site |
+| Slug | `st-jovite-gestion` |
+| URL active | https://st-jovite-gestion.luce-romuald.chatgpt.site |
+| Statut | `active` |
+| Mode d'accès | `custom` |
+| Source version | **87** |
+| Projection revision | **84** |
+| Identifiant projet | `appgprj_6aa2cc6dee7c8191bc549bde4fe4d0fa` |
+
+### Preuve disponible
+Le fichier de bibliothèque associé au Site, intitulé `St-Jovite 22028 · Gestion privée.txt`, expose les métadonnées de Site ci-dessus au 2026-10-05.
+
+Les outils de fichiers permettent d'identifier l'état et la version du Site, mais ne renvoient pas actuellement le contenu source interne de la version 87. Il ne faut donc pas prétendre disposer d'une extraction exacte de v87 tant qu'elle n'a pas été exportée.
+
+## Historique technique retrouvé dans le projet
+
+Des sources et paquets plus récents que le dépôt GitHub Pages ont été retrouvés dans le projet ChatGPT :
+
+- base serveur v67 ;
+- correctif cache/KPI v74 ;
+- interface « St-Jovite Live v2.3 Crystal Fix » ;
+- paquet `St-Jovite-Gestion-Operational-v2.3-source.zip` ;
+- paquet `St-Jovite-Gestion-Operational-v2.3-deploiement.zip` ;
+- rapport `RAPPORT-ST-JOVITE-OPERATIONNEL-v2.3.md` ;
+- contrôles visuels ultérieurs identifiés comme v75, v79, v81, v83, v85 et v86 ;
+- production actuelle déclarée en source version **87**.
+
+Le rapport opérationnel v2.3 du 2026-10-01 indique qu'à cette date le Site `st-jovite-gestion` était en source version 73 et que le paquet v2.3 était prêt à déployer mais n'était pas présenté comme déjà publié. Il documente notamment les routes `/api/data`, `/api/daily-briefing`, `/api/collector`, `/api/weather`, le binding D1 `DB`, ainsi que la correction de fraîcheur des KPI issue de v74.
+
+### Règle de prudence
+Le paquet opérationnel v2.3 est une source utile et testée, mais il ne doit pas être assimilé automatiquement à la source exacte de la production v87. Toute différence entre v2.3 et v87 doit être mesurée après export de la source v87.
+
+## Déploiement GitHub Pages vérifié par Claude — site secondaire / historique
+
+Claude a correctement vérifié un autre site publié :
+
+| Élément | Valeur |
+|---|---|
+| Dépôt | `GhostQuebec-png/plan-stjovite` |
+| Branche | `main` |
+| Commit publié | `aef30dbc67b3bc105b1562a7ea991893b1f975b5` |
 | Hébergement | GitHub Pages |
-| URL publique | https://ghostquebec-png.github.io/plan-stjovite/ |
-| Fichier principal | `index.html` (263 642 octets, `<title>St-Jovite 22028</title>`) |
-| Fichier secondaire | `outil_plannings_stjovite.html` (chargé en iframe dans l'onglet Calendrier) |
-| Dernière mise en ligne | `last-modified: Wed, 09 Sep 2026 18:21:28 GMT` |
+| URL | https://ghostquebec-png.github.io/plan-stjovite/ |
+| Dernière mise en ligne constatée | 2026-09-09 |
 
-### Méthode de vérification
-- Téléchargement de la page servie par GitHub Pages et comparaison SHA-256 avec le fichier au commit `aef30db` :
-  - `index.html` : `b04c171a5e5921df8f3223dec4502a71b6c2a38de838e18e94f4afe513476a94` — **identique** entre le site public et le dépôt.
-  - `outil_plannings_stjovite.html` : `eca7a1f89861ca4e0f867edc359a2fcee05a57431d4c8ac69fd83e78bdbb3735` — **identique**.
-- Conclusion factuelle : le contenu servi sur `ghostquebec-png.github.io/plan-stjovite/` est exactement `plan-stjovite@aef30db`.
+Claude a comparé les empreintes SHA-256 de `index.html` et `outil_plannings_stjovite.html` entre GitHub et la page servie : elles sont identiques.
 
-### Structure de l'application publiée (constatée dans le code)
-- Fichier HTML unique, sans build ni dépendance npm. Bibliothèques chargées par CDN (`html2canvas`, `pdf-lib`).
-- Écran de code d'accès : codes comparés par empreinte SHA-256 côté client (aucun code en clair dans le fichier).
-- Navigation latérale : Ma journée, Le quart, Équipe, Formation, Calendrier, Département, Réglages.
-- Sous-onglets Équipe : Évaluations, Employés, Mentorats, etc. Le modèle de données contient aussi `anniversaires`, `employeMois`, `punchs`, `bulletins`, `documents`, `taches`.
-- Stockage des données : un **Gist GitHub privé** (`gestion-rh-22028.json`) lu et écrit par l'API GitHub avec un jeton personnel saisi dans Réglages et conservé dans le `localStorage` du navigateur. Synchronisation toutes les 45 s. Aucun jeton n'est dans le dépôt.
-- Fichiers hérités intégrés : fiches de positionnement / comptoir (même lignée que `mcdo/outils/index.html` du présent dépôt).
+Cette vérification reste valide. En revanche, ce site n'est **pas la production principale actuelle de St-Jovite · Gestion**. Il s'agit d'une publication antérieure / secondaire qui ne contient pas plusieurs fonctions de la production moderne.
 
-## Écart à lever avant tout correctif — IMPORTANT
-La version publiée **ne correspond pas entièrement** à la description du projet dans `PROJECT.md` et `BUGS.md` :
-- le libellé « St-Jovite · Gestion » n'apparaît nulle part (titre affiché : « St-Jovite 22028 ») ;
-- aucune page « Employé du mois » ni « Anniversaires » dans la navigation (seulement dans le modèle de données) ;
-- aucune trace de Clearview GO, de collecte automatique des ventes, de KPI de ventes ou d'états de connecteurs.
+### Écart fonctionnel constaté sur GitHub Pages
+La version `plan-stjovite@aef30db` ne contient pas l'architecture avancée attendue pour la production actuelle, notamment les fonctions de collecte Clearview/Medallia et le pipeline de briefing quotidien documenté dans les sources ultérieures.
 
-Hypothèses (non vérifiées) :
-1. une version plus récente de « St-Jovite · Gestion » existe ailleurs (conversation ChatGPT, artefact claude.ai non partagé, fichier local, autre hébergement) et n'a jamais été poussée sur GitHub ;
-2. ou les bugs historiques concernent une version de travail qui n'a pas été publiée.
+## Architecture de collaboration retenue
 
-Tant que Romuald n'a pas confirmé l'URL qu'il utilise réellement au quotidien, **`plan-stjovite@aef30db` est la seule production vérifiable**, mais il n'est pas prouvé que ce soit « St-Jovite · Gestion ».
-
-## Autres sources examinées (et écartées)
-- `Mes-projets-/mcdo/outils/index.html` : « Préparation des quarts » (outil plus ancien, juin 2026). Pas la production du site de gestion.
-- `Mes-projets-/mcdo/outils/plan-positionnement-redessine.html` : plan de positionnement seul.
-- Artefact claude.ai « St-Jovite Gestion — Avant/Après » : maquette de design (canevas), pas l'application.
-- `GhostQuebec-png/on-embauche-21-22-23-aout-2026` : page d'embauche. `GhostQuebec-png/docs` : gabarit Mintlify. Sans lien.
-- Historique `plan-stjovite` : un fichier `gestion-rh.html` a existé (juillet 2026) puis a été supprimé au commit `7a48c45` (2026-09-08) et fusionné dans `index.html`.
+- `Mes-projets-/mcdo/coordination/` : décisions, TODO, bugs et passations ChatGPT ↔ Claude.
+- ChatGPT Site `st-jovite-gestion` : production principale actuelle.
+- `plan-stjovite` : dépôt historique / secondaire tant que la source exacte v87 n'y a pas été versée.
+- Toute future source GitHub canonique doit être créée à partir d'un **export exact de v87**, pas à partir d'une archive plus ancienne supposée équivalente.
 
 ## Flux souhaité
 Romuald
 → ChatGPT ou Claude
-→ branche/commit GitHub (dans `plan-stjovite` pour le code, `Mes-projets-` pour la coordination)
+→ branche GitHub de travail
 → tests et vérification
-→ revue par l'autre agent si nécessaire
-→ validation
-→ déploiement (fusion sur `plan-stjovite/main` = mise en ligne immédiate par GitHub Pages)
+→ revue par l'autre agent
+→ validation de Romuald
+→ déploiement sur la production appropriée
 
-## Règle de déploiement
-Ne jamais considérer une archive historique, un ancien correctif ou une copie locale comme la production actuelle sans vérification.
-Attention : sur `plan-stjovite`, tout push sur `main` est publié en production. Travailler sur une branche et fusionner seulement après validation de Romuald.
+## Règles de déploiement
+1. Ne jamais remplacer la production ChatGPT Site v87 par `plan-stjovite@aef30db`.
+2. Ne jamais considérer v2.3, v74 ou v67 comme identiques à v87 sans comparaison.
+3. Ne pas pousser sur `plan-stjovite/main` en pensant que cela met à jour le ChatGPT Site : cela met uniquement à jour GitHub Pages.
+4. Travailler sur des branches dédiées et préserver les paramètres d'accès et secrets de production.
+5. Aucun secret, cookie, code MFA ou jeton ne doit être versé dans GitHub.
