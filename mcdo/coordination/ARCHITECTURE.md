@@ -43,6 +43,35 @@ Le rapport opérationnel v2.3 du 2026-10-01 indique qu'à cette date le Site `st
 ### Règle de prudence
 Le paquet opérationnel v2.3 est une source utile et testée, mais il ne doit pas être assimilé automatiquement à la source exacte de la production v87. Toute différence entre v2.3 et v87 doit être mesurée après export de la source v87.
 
+## Accès à la v87 depuis Claude — constaté le 2026-10-05
+
+- `GET https://st-jovite-gestion.luce-romuald.chatgpt.site/` → **HTTP 401**, page « Log in to access · St-Jovite 22028 · Gestion privée », bouton « Continue with ChatGPT ». Servi derrière Cloudflare, `cache-control: no-store`.
+- Conséquence : le site confirme son existence et son titre, mais **aucun fichier source (HTML, JS, CSS, worker) n'est lisible sans la session ChatGPT de Romuald**. Claude ne doit pas tenter de contourner cette connexion.
+- Même connecté, le navigateur ne verrait que le code client. Le code serveur (Worker, D1, secrets, flux Make) n'est jamais exposé publiquement. **Seul un export depuis le projet ChatGPT donne la source exacte et complète de la v87.**
+
+## Sources de la lignée Crystal présentes dans GitHub — constatées par Claude
+
+Les paquets v2.3, v67, v74 et les contrôles v75 à v86 **ne sont pas dans GitHub**. Ils n'existent que dans la bibliothèque du projet ChatGPT. Claude ne peut donc pas les comparer pour l'instant.
+
+La seule trace de la lignée dans GitHub est sur la branche **non fusionnée** `claude/awesome-noether-gwtzj2` de `Mes-projets-`, dossier `mcdo/site/` (24-25 septembre 2026) :
+
+| Dossier | Contenu | Nature |
+|---|---|---|
+| `correctifs-v58/` | dans l'historique seulement (`4478559`), supprimé ensuite | correctif partiel |
+| `correctifs-v60/` | `worker.js`, `daily-briefing.js/.css`, `verify-briefing.mjs`, `verify-collector.mjs`, patch, zip, LISEZMOI | correctif partiel |
+| `correctifs-v61/` | idem v60 + delta v60→v61 | correctif partiel |
+| `collecteur/` | `instructions-collecte-v2.txt` + zip | consignes de la tâche de collecte |
+
+Ce qu'on en apprend (faits issus de ces fichiers, valables pour v61, **non vérifiés pour v87**) :
+- base déclarée : « export v58, commit `3d84383a59df3d71053c2c15b220eaf4ae99891e` ». Ce commit **n'existe dans aucun dépôt accessible** : l'export v58 complet n'a jamais été versé dans GitHub ;
+- le Worker lit un flux unique `BRIEFING_FEED_URL` (webhook Make) et stocke dans D1 (`DB`, table `gestion_documents`, lignes `personnel`, `briefing-cache`, `collector-live`) ;
+- route `POST /api/collector` protégée par le secret `COLLECTOR_TOKEN` (404 tant que le secret n'existe pas) ;
+- la collecte Clearview/Medallia/McHire/McD Connect se fait **hors du code du site** (agent navigateur + scénario Make « Enregistrer le briefing quotidien ») ;
+- d'autres fichiers sont cités mais absents : `index.html`, `team.js`, `agenda-upgrades.js`, `package.json`, `verify-today.mjs` et les autres `verify-*.mjs`.
+
+Ordre chronologique de la lignée : v58 → v59 → v60 → v61 (GitHub, partiel) → v67 → v73 (production au 2026-10-01) → v74 → v2.3 Crystal Fix → v75…v86 → **v87 (production)**.
+Conclusion : les correctifs v58-v61 sont des **ancêtres partiels**, utiles pour lire l'architecture, mais inutilisables comme source de la v87.
+
 ## Déploiement GitHub Pages vérifié par Claude — site secondaire / historique
 
 Claude a correctement vérifié un autre site publié :
