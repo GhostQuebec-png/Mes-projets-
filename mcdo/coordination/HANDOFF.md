@@ -3,6 +3,66 @@
 ## Dernière passation
 
 Date : 2026-10-05
+Auteur : ChatGPT
+Branche : `agent/export-v87` (dépôt public `Mes-projets-`)
+Base : `claude/relaxed-tesla-p190b6`
+Projet : St-Jovite · Gestion — Site
+
+### Résultat de la tentative d'export v87
+ChatGPT a tenté d'extraire la projection du Site v87 via l'interface de fichiers du projet. L'opération échoue avec le message exact :
+
+> `files.materialize is unavailable for Site projections.`
+
+Les métadonnées restent visibles (Site `st-jovite-gestion`, source version 87, projection revision 84), mais **la source exacte de la v87 n'est pas exportable depuis les outils disponibles dans cette session**.
+
+### Sources récupérées avec succès
+ChatGPT a récupéré les paquets suivants depuis la bibliothèque du projet :
+- `St-Jovite-Gestion-Operational-v2.3-source.zip` — SHA-256 `079c01406a8fe07a2c6cef7f093f1d8a2c9b95ac3cefbdc8be8a734661e38ca5`
+- `St-Jovite-Gestion-correctif-cache-KPI-v74.zip` — SHA-256 `492d67f426084f256f12b2c83d42782e4f8a5a0a3782ca645f338fd33ef57e28`
+- `St-Jovite-Gestion-source-publiee-v67.zip` — SHA-256 `b579512fe2148d62decff70f46d4b654b187b89eb92b329ed11f241e18d9ab90`
+- `RAPPORT-ST-JOVITE-OPERATIONNEL-v2.3.md` — SHA-256 `89f5c3d808089651be0417b12695836545cf550b78e0a6f7b7dbc0b4abc5d6da`
+- `RAPPORT-CLAUDE-v67.md` — SHA-256 `a00f3cf1db107c6b8bd1acb107c6884a708c3335c7bd83bbf304ee4e0e16892e`
+
+Inventaire après extraction :
+- v2.3 : 129 fichiers
+- v74 : 4 fichiers
+- v67 : 124 fichiers
+
+Un scan automatisé des sources texte n'a détecté aucun jeton GitHub, Bearer token, webhook Make/Slack/Discord ou valeur secrète hardcodée correspondant aux motifs recherchés. Les noms de variables sensibles (`BRIEFING_FEED_URL`, `COLLECTOR_TOKEN`, etc.) restent présents comme prévu.
+
+### Blocage de confidentialité GitHub
+Avant versement, ChatGPT a vérifié la visibilité des dépôts :
+- `GhostQuebec-png/Mes-projets-` : **public**
+- `GhostQuebec-png/plan-stjovite` : **public**
+
+Les paquets v2.3/v67 contiennent notamment des horaires, données d'équipe et documents internes. Une branche GitHub publique serait elle aussi publiquement accessible.
+
+**Décision de sécurité :** aucun paquet source complet ni donnée RH/interne n'a été versé dans le dépôt public. Aucun secret ni document interne n'a été exposé.
+
+### État de la branche
+La branche `agent/export-v87` a bien été créée à partir de `claude/relaxed-tesla-p190b6`.
+
+Elle contient uniquement de la documentation sûre :
+- cette passation ;
+- une note d'architecture sur le caractère public des dépôts ;
+- `mcdo/site/SOURCE-INVENTORY.md` ;
+- `mcdo/site/v87/EXPORT-BLOCKED.md`.
+
+### Prochaine action recommandée
+Pour permettre la comparaison exacte v2.3 → v87 :
+1. obtenir un export manuel de la source v87 depuis l'interface ChatGPT si une option d'export/téléchargement y est disponible ;
+2. **ne pas déposer cet export dans un dépôt public** ;
+3. utiliser un dépôt GitHub privé dédié, ou rendre explicitement privé un dépôt choisi après décision de Romuald ;
+4. y verser v87, v2.3, v74 et v67 après contrôle des secrets et des données sensibles ;
+5. Claude pourra alors faire le diff fichier par fichier.
+
+Aucune modification de production n'a été effectuée. Aucun push sur `plan-stjovite/main`.
+
+---
+
+## Passation Claude précédente
+
+Date : 2026-10-05
 Auteur : Claude (Claude Code, session cloud)
 Branche : `claude/relaxed-tesla-p190b6` (dépôt `Mes-projets-`), avance rapide sur `agent/production-site-v87` puis un commit de Claude par-dessus
 Projet : St-Jovite · Gestion — Site
