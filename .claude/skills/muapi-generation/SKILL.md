@@ -19,7 +19,7 @@ Cette skill vient de l'exploration du repo `Anil-matcha/Open-Generative-AI` (int
    ```bash
    python3 scripts/generate.py search "<mot-cle>" [--category t2i|t2v|i2i|i2v|v2v|lipsync|recast|audio]
    ```
-   Catalogue local dans `reference/models.json` (535 modeles, synchronise depuis le repo source le 2026-09-07 — peut se desynchroniser avec le temps, MuAPI ajoute des modeles regulierement).
+   Catalogue local dans `reference/models.json` (575 modeles, synchronise depuis le repo source le 2026-10-09 — peut se desynchroniser avec le temps, MuAPI ajoute des modeles regulierement).
 
 2. **Uploader un fichier local** (si l'image/video/audio de reference n'est pas deja en ligne) :
    ```bash
