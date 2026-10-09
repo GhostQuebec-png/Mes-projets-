@@ -28,6 +28,8 @@ from pathlib import Path
 
 BASE_URL = "https://api.muapi.ai"
 REFERENCE_PATH = Path(__file__).resolve().parent.parent / "reference" / "models.json"
+# Champs que l'API attend sous forme de liste d'URL (et non d'une URL simple)
+LIST_FIELDS = {"images_list", "image_urls", "reference_images", "video_urls", "reference_videos"}
 
 CATEGORY_KEYS = {
     "t2i": "t2iModels",
@@ -168,8 +170,8 @@ def cmd_run(args):
 
     image_field = model_info.get("imageField") or "image_url"
     if args.image_url:
-        if image_field == "images_list":
-            payload["images_list"] = [args.image_url]
+        if image_field in LIST_FIELDS:
+            payload[image_field] = [args.image_url]
         else:
             payload[image_field] = args.image_url
         if args.category == "i2i" and args.strength is not None:
@@ -181,7 +183,7 @@ def cmd_run(args):
 
     video_field = model_info.get("videoField") or "video_url"
     if args.video_url:
-        payload[video_field] = args.video_url
+        payload[video_field] = [args.video_url] if video_field in LIST_FIELDS else args.video_url
 
     if args.audio_url:
         payload["audio_url"] = args.audio_url
