@@ -1,2 +1,5 @@
 __pycache__/
 *.pyc
+
+# graphify : graphe local, jamais versionné (dépôt public, peut contenir des données RH)
+graphify-out/
